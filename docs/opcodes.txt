@@ -2,41 +2,26 @@
 <digit> ::= '0'->'9'
 <number> ::= <digit> { <digit> }
 <identifier> ::= <alpha> { <alpha> | <digit> } 
-<type_specifier> ::= 'B' | 'W' | 'DW'
 <condition> :: = 'NZ' | 'Z' | 'NC' | 'C' | 'MP' 
+<type_specifier> ::= 'B' | 'W' | 'DW'
 
-REGISTER
-<8bit_register> ::= 'br0' | 'br1' | 'br2' | 'br3'
-<16bit_register> ::= 'ebr0' | 'ebr1' | 'ebr2' | 'ebr3'
-<32bit_register> ::= 'xbr0' | 'xbr1' | 'xbr2' | 'xbr3'
-<gp_register> ::= <8bit_register> | <16bit_register> | <32bit_register>
-<sp_register> ::= 'sp' | 'rar'
-
-ADDRESSING
-<immediate> ::= <number>
-<label_name> ::= <identifier>
+REGISTERS
+<gp_register_range> ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7'
+<gp_register> ::= '$' 'r' <gp_register_range>
+<sp_register> ::= '$' 'sp' | 'rar'
 <register> ::= <gp_register> | <sp_register>
-<destination> ::= <gp_register> | '[' <gp_register> ']'
-<source> ::= <register> | <immediate> | <label_name>
 
 
-INSTRUCTIONS
-<lbl_op> ::= 'lbl' <identifier>
-<data_op> ::= 'data' <type_specifier> <source>
-<mov_op> ::= 'mov' <destination> <source> 
+ADDRESS MODE
+<source> ::= <identifier> | <immediate> | <register>
+<destination> ::= '[' <register> ']' | <gp_register>
+<destination_source_pair> ::= ' ' <destination> ',' <source> 
 
-arithmetic
-<add_op> ::= 'add' <destination> <source> 
-<sub_op> ::= 'sub' <destination> <source> 
-<mul_op> ::= 'mul' <destination> <source> 
-<div_op> ::= 'div' <destination> <source>
 
-logical
-<and_op> ::= 'and' <destination> <source> 
-<or_op> ::= 'or' <destination> <source>
-<xor_op> ::= 'xor' <destination> <source>
-<not_op> ::= 'not' <destination> <source>
-
-control
-<cmp_op> ::= 'cmp' <destination> <source>
-<jmp_op> ::= 'j' <condition> <label_name>
+INSTRUCTION SET
+<label_directive> ::= 'LABEL' <identifier>
+<data_directive> ::= 'DATA' <type_specifier> <immediate>
+<move_instruction> ::= 'MOV' <type_specifier> <destination_source_pair>
+<arithmetic_instruction> ::= ('ADD' | 'SUB' | 'MUL' | 'DIV') <destination_source_pair>
+<logical_instruction> ::= ('AND' | 'OR' | 'XOR' | 'NOT') <destination_source_pair>
+<compare_instruction> ::= 'CMP' <destination_source_pair>
