@@ -45,6 +45,8 @@ const ( // opcode mapping
 	pop32
 	call
 	ret
+	shl
+	shr
 	halt
 )
 

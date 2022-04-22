@@ -27,8 +27,11 @@ INSTRUCTION SET
 <push_instruction> ::= 'PUSH' <type_specifier> <source>
 <pop_instruction> ::= 'POP' <type_specifier>
 <call_instruction> ::= 'CALL' <source>
+<shl_instruction> ::= 'SHL' <register> <source>
+<shr_instruction> ::= 'SHR' <register> <source>
 
 <ret_instruction> ::= 'RET'
 <nop_instruction> ::= 'NOP'
 <halt_instruction> ::= 'HALT'
+
 
