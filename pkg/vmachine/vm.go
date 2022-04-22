@@ -47,20 +47,11 @@ func (vm *VM) LoadFromFile(path string) (error) {
 	return nil
 }
 
-func subBits(x uint32, k uint8, p uint8) (uint32) {
-	return ((1 << k) - 1) & (x >> (p - 1))
-}
-
-func kthBit (x uint32, k uint8) (uint8) {
-	return uint8((x & (1 << (k - 1))) >> (k - 1))
-}
-
-
-func (vm *VM) setBlock (p uint32, d uint32, s uint32) {
-	for p < p+s {
-		vm.mem[p] = uint8(d)
-		p++;
-		d >>= 8
+func (vm *VM) setFlags(r uint8) {
+	vm.reg[flg] |= ((vm.reg[r] >> 31) << nf) // set negative flag
+	
+	if(vm.reg[r] == 0) { // set zero flag
+		vm.reg[flg] |= (1 << zf) 
 	}
 }
 
@@ -75,7 +66,7 @@ func (vm *VM) fetch(n uint8) {
 
 func (vm *VM) Run() {
 	for {
-		hs := kthBit(vm.reg[flg], hf) //get halt status flag
+		hs := ((1 << hf) & vm.reg[flg]) >> hf//get halt status flag
 		if hs == 1 {
 			break //break if halt flag is set to 1
 		}
@@ -84,8 +75,8 @@ func (vm *VM) Run() {
 		vm.fetch(1)
 
 		//decode
-		opc := uint8(subBits(vm.reg[ir], 6, 3))
-		opr := uint8(subBits(vm.reg[ir], 2, 1))
+		opc := 63 & (vm.reg[ir] >> 2)
+		opr := uint8(3 & vm.reg[ir])
 		
 		//execute
 		opLookup[opc](vm, opr)

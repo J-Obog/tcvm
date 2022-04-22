@@ -92,6 +92,23 @@ func mov32(vm *VM, opr uint8) {
 	}
 }
 
+func add(vm *VM, opr uint8) {
+	vm.fetch(1)
+	reg := uint8(vm.reg[ir])
+
+	if opr == 0 {
+		vm.fetch(4)
+		src := vm.reg[ir]
+		vm.reg[reg] = uint32(uint64(vm.reg[reg]) + uint64(src))
+	} else {
+		vm.fetch(1)
+		src := uint8(vm.reg[ir])
+		vm.reg[reg] = uint32(uint64(vm.reg[reg]) + uint64(vm.reg[src]))
+	}
+
+	vm.setFlags(reg)
+}
+
 var opLookup = [64]opFn{
 	nop,
 	mov8,
