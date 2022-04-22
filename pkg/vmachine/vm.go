@@ -15,13 +15,13 @@ const ( // register mapping
 	sp // stack pointer
 	rar // return address register 
 	ir // instruction register
-	flg // flags [HALT | ZERO | CARRY]
+	flg // flags [HALT | ZERO | NEG]
 )
 
 const ( // status flag mapping
 	hf = iota
 	zf
-	cf
+	nf
 )
 
 type VM struct {

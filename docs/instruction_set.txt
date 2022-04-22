@@ -2,7 +2,7 @@
 <digit> ::= '0'->'9'
 <number> ::= <digit> { <digit> }
 <identifier> ::= <alpha> | '_' { <alpha> | <digit> | '_'} 
-<condition> :: = 'NZ' | 'Z' | 'NC' | 'C' | 'MP' 
+<condition> :: = 'NZ' | 'Z' | 'NN' | 'N' | 'MP' 
 <type_specifier> ::= '8' | '16' | '32'
 
 REGISTERS

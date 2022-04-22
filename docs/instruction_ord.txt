@@ -14,8 +14,8 @@ cmp
 jmp
 jz
 jnz
-jc
-jnc
+jn
+jnn
 push8
 push16
 push32
