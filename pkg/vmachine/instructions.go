@@ -1,4 +1,4 @@
-package tcvm
+package vmachine
 
 type opFn func(*VM, uint8)
 

@@ -1,4 +1,4 @@
-package tcvm
+package vmachine
 
 import (
 	"errors"
