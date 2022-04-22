@@ -1,27 +1,30 @@
 <alpha> ::= 'a'->'z' | 'A'->'Z'
 <digit> ::= '0'->'9'
 <number> ::= <digit> { <digit> }
-<identifier> ::= <alpha> { <alpha> | <digit> } 
+<identifier> ::= <alpha> | '_' { <alpha> | <digit> | '_'} 
 <condition> :: = 'NZ' | 'Z' | 'NC' | 'C' | 'MP' 
-<type_specifier> ::= 'B' | 'W' | 'DW'
+<type_specifier> ::= '8' | '16' | '32'
 
 REGISTERS
-<gp_register_range> ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7'
-<gp_register> ::= '$' 'r' <gp_register_range>
-<sp_register> ::= '$' 'sp' | 'rar'
-<register> ::= <gp_register> | <sp_register>
+<register> ::= '$' ('r'('0' | '1' | '2' | '3') | 'sp')   
 
 
 ADDRESS MODE
 <source> ::= <identifier> | <immediate> | <register>
-<destination> ::= '[' <register> ']' | <gp_register>
-<destination_source_pair> ::= ' ' <destination> ',' <source> 
 
 
-INSTRUCTION SET
+DIRECTIVES
 <label_directive> ::= 'LABEL' <identifier>
 <data_directive> ::= 'DATA' <type_specifier> <immediate>
-<move_instruction> ::= 'MOV' <type_specifier> <destination_source_pair>
-<arithmetic_instruction> ::= ('ADD' | 'SUB' | 'MUL' | 'DIV') <destination_source_pair>
-<logical_instruction> ::= ('AND' | 'OR' | 'XOR' | 'NOT') <destination_source_pair>
-<compare_instruction> ::= 'CMP' <destination_source_pair>
+
+INSTRUCTION SET
+<move_instruction> ::= 'MOV' <type_specifier> (<register> | '[' <register> ']') <source>
+<arithmetic_instruction> ::= ('ADD' | 'SUB' | 'MUL' | 'DIV') <register> <source>
+<logical_instruction> ::= ('AND' | 'OR' | 'XOR' | 'NOT') <register> <source>
+
+<compare_instruction> ::= 'CMP' <register> <source>
+<jmp_instruction> ::= 'J' <condition> <source>
+<push_instruction> ::= 'PUSH' <type_specifier> <source>
+<pop_instruction> ::= 'POP' <type_specifier>
+<call_instruction> ::= 'CALL' <source>
+<ret_instruction> ::= 'RET'
