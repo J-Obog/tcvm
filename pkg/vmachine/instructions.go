@@ -126,6 +126,65 @@ func sub(vm *VM, opr uint8) {
 	vm.setFlags(reg)
 }
 
+func and(vm *VM, opr uint8) {
+	vm.fetch(1)
+	reg := uint8(vm.reg[ir])
+
+	if opr == 0 {
+		vm.fetch(4)
+		src := vm.reg[ir]
+		vm.reg[reg] &= src
+	} else {
+		vm.fetch(1)
+		src := uint8(vm.reg[ir])
+		vm.reg[reg] &= vm.reg[src]
+	}
+
+	vm.setFlags(reg)
+}
+
+func or(vm *VM, opr uint8) {
+	vm.fetch(1)
+	reg := uint8(vm.reg[ir])
+
+	if opr == 0 {
+		vm.fetch(4)
+		src := vm.reg[ir]
+		vm.reg[reg] |= src
+	} else {
+		vm.fetch(1)
+		src := uint8(vm.reg[ir])
+		vm.reg[reg] |= vm.reg[src]
+	}
+
+	vm.setFlags(reg)
+}
+
+func xor(vm *VM, opr uint8) {
+	vm.fetch(1)
+	reg := uint8(vm.reg[ir])
+
+	if opr == 0 {
+		vm.fetch(4)
+		src := vm.reg[ir]
+		vm.reg[reg] ^= src
+	} else {
+		vm.fetch(1)
+		src := uint8(vm.reg[ir])
+		vm.reg[reg] ^= vm.reg[src]
+	}
+
+	vm.setFlags(reg)
+}
+
+func not(vm *VM, opr uint8) {
+	vm.fetch(1)
+	reg := uint8(vm.reg[ir])
+	vm.reg[reg] = ^vm.reg[reg]
+
+	vm.setFlags(reg)
+}
+
 var opLookup = [64]opFn{
 	nop,
 	mov8,
@@ -133,4 +192,10 @@ var opLookup = [64]opFn{
 	mov32,
 	add,
 	sub,
+	//mul
+	//div
+	and,
+	or,
+	not,
+	xor,
 }
