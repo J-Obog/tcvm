@@ -55,15 +55,11 @@ func (vm *VM) fetch(n uint8) {
 	}
 }
 
-func (vm *VM) execute() {
-	//opc := vm.subBits(vm.reg[ir], 6, 3)
-	//opr := vm.subBits(vm.reg[ir], 2, 1)
-}
-
-
 func (vm *VM) Run() {
 	for {
 		vm.fetch(1)
-		vm.execute()
+		opc := uint8(vm.subBits(vm.reg[ir], 6, 3))
+		opr := uint8(vm.subBits(vm.reg[ir], 2, 1))
+		opLookup[opc](vm, opr)
 	}
 }
