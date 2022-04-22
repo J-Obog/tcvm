@@ -22,9 +22,13 @@ INSTRUCTION SET
 <arithmetic_instruction> ::= ('ADD' | 'SUB' | 'MUL' | 'DIV') <register> <source>
 <logical_instruction> ::= ('AND' | 'OR' | 'XOR' | 'NOT') <register> <source>
 
-<compare_instruction> ::= 'CMP' <register> <source>
+<cmp_instruction> ::= 'CMP' <register> <source>
 <jmp_instruction> ::= 'J' <condition> <source>
 <push_instruction> ::= 'PUSH' <type_specifier> <source>
 <pop_instruction> ::= 'POP' <type_specifier>
 <call_instruction> ::= 'CALL' <source>
+
 <ret_instruction> ::= 'RET'
+<nop_instruction> ::= 'NOP'
+<halt_instruction> ::= 'HALT'
+

@@ -18,6 +18,36 @@ const ( // register mapping
 	flg // flags [HALT | ZERO | CARRY]
 )
 
+const ( // opcode mapping
+	nop = iota 
+	mov8
+	mov16
+	mov32
+	add
+	sub
+	mul
+	div
+	and
+	or
+	not
+	xor
+	cmp
+	jmp
+	jz
+	jnz
+	jc
+	jnc
+	push8
+	push16
+	push32
+	pop8
+	pop16
+	pop32
+	call
+	ret
+	halt
+)
+
 type VM struct {
 	reg [16]uint32
 	mem [math.MaxInt32]uint8
