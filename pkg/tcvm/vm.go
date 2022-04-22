@@ -7,15 +7,15 @@ import (
 )
 
 const ( // register mapping
-	r0 = 0 // RX = general purpose register
-	r1 = 1
-	r2 = 2 
-	r3 = 3 
-	pc = 4 // program counter
-	sp = 5 // stack pointer
-	rar = 6 // return address register 
-	ir = 7 // instruction register
-	flg = 8 // flags [HALT | ZERO | CARRY]
+	r0 = iota // RX = general purpose register
+	r1 
+	r2 
+	r3  
+	pc // program counter
+	sp // stack pointer
+	rar // return address register 
+	ir // instruction register
+	flg // flags [HALT | ZERO | CARRY]
 )
 
 type VM struct {
