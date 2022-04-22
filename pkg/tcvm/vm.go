@@ -18,38 +18,6 @@ const ( // register mapping
 	flg // flags [HALT | ZERO | CARRY]
 )
 
-const ( // opcode mapping
-	nop = iota 
-	mov8
-	mov16
-	mov32
-	add
-	sub
-	mul
-	div
-	and
-	or
-	not
-	xor
-	cmp
-	jmp
-	jz
-	jnz
-	jc
-	jnc
-	push8
-	push16
-	push32
-	pop8
-	pop16
-	pop32
-	call
-	ret
-	shl
-	shr
-	sprnt
-	halt
-)
 
 type VM struct {
 	reg [16]uint32
@@ -74,11 +42,28 @@ func (vm *VM) LoadFromFile(path string) (error) {
 	return nil
 }
 
+func (vm *VM) subBits(x uint32, k uint8, p uint8) (uint32) {
+	return ((1 << k) - 1) & (x >> (p - 1))
+}
+
 func (vm *VM) fetch(n uint8) {
 	var i uint8; 
 	for i = 0; i < n; i++ {
 		vm.reg[ir] <<= 8
 		vm.reg[ir] |= uint32(vm.mem[vm.reg[pc]])
 		vm.reg[pc]++
+	}
+}
+
+func (vm *VM) execute() {
+	//opc := vm.subBits(vm.reg[ir], 6, 3)
+	//opr := vm.subBits(vm.reg[ir], 2, 1)
+}
+
+
+func (vm *VM) Run() {
+	for {
+		vm.fetch(1)
+		vm.execute()
 	}
 }
