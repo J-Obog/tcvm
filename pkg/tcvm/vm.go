@@ -6,6 +6,16 @@ import (
 	"os"
 )
 
+const ( // register mapping
+	R0 = 0 // RX = general purpose register
+	R1 = 1
+	R2 = 2 
+	R3 = 3 
+	PC = 4 // program counter
+	SP = 5 // stack pointer
+	RAR = 6 // return address register 
+	IR = 7 // instruction register
+)
 
 type VirtualMachine struct {
 	RegisterFile [16]uint32
