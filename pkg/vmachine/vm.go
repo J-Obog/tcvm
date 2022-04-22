@@ -25,7 +25,7 @@ const ( // status flag mapping
 )
 
 type VM struct {
-	reg [16]uint32
+	reg [flg + 1]uint32
 	mem [math.MaxInt32]uint8
 }
 
