@@ -15,12 +15,12 @@ const ( // register mapping
 	sp = 5 // stack pointer
 	rar = 6 // return address register 
 	ir = 7 // instruction register
-	flg = 8 // flags
+	flg = 8 // flags [HALT | ZERO | CARRY]
 )
 
 type VM struct {
 	reg [16]uint32
-	mem       [math.MaxInt32]uint8
+	mem [math.MaxInt32]uint8
 }
 
 func (vm *VM) LoadFromFile(path string) (error) {
@@ -39,4 +39,9 @@ func (vm *VM) LoadFromFile(path string) (error) {
 	}
 
 	return nil
+}
+
+func (vm *VM) fetch() {
+	vm.reg[ir] = vm.reg[pc]
+	vm.reg[pc]++
 }
