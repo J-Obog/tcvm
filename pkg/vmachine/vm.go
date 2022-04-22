@@ -55,6 +55,15 @@ func kthBit (x uint32, k uint8) (uint8) {
 	return uint8((x & (1 << (k - 1))) >> (k - 1))
 }
 
+
+func (vm *VM) setBlock (p uint32, d uint32, s uint32) {
+	for p < p+s {
+		vm.mem[p] = uint8(d)
+		p++;
+		d >>= 8
+	}
+}
+
 func (vm *VM) fetch(n uint8) {
 	var i uint8; 
 	for i = 0; i < n; i++ {
