@@ -109,9 +109,28 @@ func add(vm *VM, opr uint8) {
 	vm.setFlags(reg)
 }
 
+func sub(vm *VM, opr uint8) {
+	vm.fetch(1)
+	reg := uint8(vm.reg[ir])
+
+	if opr == 0 {
+		vm.fetch(4)
+		src := vm.reg[ir]
+		vm.reg[reg] = uint32(uint64(vm.reg[reg]) + uint64((^src)+1))
+	} else {
+		vm.fetch(1)
+		src := uint8(vm.reg[ir])
+		vm.reg[reg] = uint32(uint64(vm.reg[reg]) + uint64((^vm.reg[src])+1))
+	}
+
+	vm.setFlags(reg)
+}
+
 var opLookup = [64]opFn{
 	nop,
 	mov8,
 	mov16,
 	mov32,
+	add,
+	sub,
 }
