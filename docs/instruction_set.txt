@@ -17,6 +17,7 @@ DIRECTIVES
 <label_directive> ::= 'LABEL' <identifier>
 <data_directive> ::= 'DATA' <type_specifier> <immediate>
 
+
 INSTRUCTION SET
 <move_instruction> ::= 'MOV' <type_specifier> (<register> | '[' <register> ']') <source>
 <arithmetic_instruction> ::= ('ADD' | 'SUB' | 'MUL' | 'DIV') <register> <source>
@@ -33,5 +34,3 @@ INSTRUCTION SET
 <ret_instruction> ::= 'RET'
 <nop_instruction> ::= 'NOP'
 <halt_instruction> ::= 'HALT'
-
-

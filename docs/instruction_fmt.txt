@@ -4,9 +4,9 @@ Instruction Format
 8 bit format
 
 
-[0:2] => OPERAND
+[0:1] => OPERAND (64 posible instructions)
 
-[3:7] => OPCODE 
+[2:7] => OPCODE 
 
 
 The OPERATION specifies the instruction to be executed and the OPERAND specifies what operand(s) the instruction will take in.
