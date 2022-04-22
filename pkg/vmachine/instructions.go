@@ -185,6 +185,90 @@ func not(vm *VM, opr uint8) {
 	vm.setFlags(reg)
 }
 
+func jmp(vm *VM, opr uint8) {
+	if opr == 0 {
+		vm.fetch(4)
+		src := vm.reg[ir]
+		vm.reg[pc] = src
+	} else {
+		vm.fetch(1)
+		src := uint8(vm.reg[ir])
+		vm.reg[pc] = vm.reg[src]
+	}
+}
+
+func jz(vm *VM, opr uint8) {
+	var src uint32
+
+	if opr == 0 {
+		vm.fetch(4)
+		src = vm.reg[ir]
+	} else {
+		vm.fetch(1)
+		r := uint8(vm.reg[ir])
+		src = vm.reg[r]
+	}
+
+	zfs := ((1 << zf) & vm.reg[flg]) >> zf
+	if zfs == 1 {
+		vm.reg[pc] = src
+	}
+}
+
+func jnz(vm *VM, opr uint8) {
+	var src uint32
+
+	if opr == 0 {
+		vm.fetch(4)
+		src = vm.reg[ir]
+	} else {
+		vm.fetch(1)
+		r := uint8(vm.reg[ir])
+		src = vm.reg[r]
+	}
+
+	zfs := ((1 << zf) & vm.reg[flg]) >> zf
+	if zfs == 0 {
+		vm.reg[pc] = src
+	}
+}
+
+func jn(vm *VM, opr uint8) {
+	var src uint32
+
+	if opr == 0 {
+		vm.fetch(4)
+		src = vm.reg[ir]
+	} else {
+		vm.fetch(1)
+		r := uint8(vm.reg[ir])
+		src = vm.reg[r]
+	}
+
+	nfs := ((1 << nf) & vm.reg[flg]) >> nf
+	if nfs == 1 {
+		vm.reg[pc] = src
+	}
+}
+
+func jnn(vm *VM, opr uint8) {
+	var src uint32
+
+	if opr == 0 {
+		vm.fetch(4)
+		src = vm.reg[ir]
+	} else {
+		vm.fetch(1)
+		r := uint8(vm.reg[ir])
+		src = vm.reg[r]
+	}
+
+	nfs := ((1 << nf) & vm.reg[flg]) >> nf
+	if nfs == 0 {
+		vm.reg[pc] = src
+	}
+}
+
 var opLookup = [64]opFn{
 	nop,
 	mov8,
@@ -198,4 +282,9 @@ var opLookup = [64]opFn{
 	or,
 	not,
 	xor,
+	jmp,
+	jz,
+	jnz,
+	jn,
+	jnn,
 }
