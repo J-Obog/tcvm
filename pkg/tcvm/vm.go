@@ -41,7 +41,11 @@ func (vm *VM) LoadFromFile(path string) (error) {
 	return nil
 }
 
-func (vm *VM) fetch() {
-	vm.reg[ir] = vm.reg[pc]
-	vm.reg[pc]++
+func (vm *VM) fetch(n uint8) {
+	var i uint8; 
+	for i = 0; i < n; i++ {
+		vm.reg[ir] <<= 8
+		vm.reg[ir] |= uint32(vm.mem[vm.reg[pc]])
+		vm.reg[pc]++
+	}
 }
