@@ -47,6 +47,7 @@ const ( // opcode mapping
 	ret
 	shl
 	shr
+	sprnt
 	halt
 )
 

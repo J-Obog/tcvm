@@ -34,3 +34,7 @@ INSTRUCTION SET
 <ret_instruction> ::= 'RET'
 <nop_instruction> ::= 'NOP'
 <halt_instruction> ::= 'HALT'
+
+
+SYSTEM CALLS
+<sprnt_instruction> ::= 'SPRNT' <source>
