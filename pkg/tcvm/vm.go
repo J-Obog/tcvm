@@ -18,6 +18,11 @@ const ( // register mapping
 	flg // flags [HALT | ZERO | CARRY]
 )
 
+const ( // status flag mapping
+	hf = iota
+	zf
+	cf
+)
 
 type VM struct {
 	reg [16]uint32
@@ -42,8 +47,12 @@ func (vm *VM) LoadFromFile(path string) (error) {
 	return nil
 }
 
-func (vm *VM) subBits(x uint32, k uint8, p uint8) (uint32) {
+func subBits(x uint32, k uint8, p uint8) (uint32) {
 	return ((1 << k) - 1) & (x >> (p - 1))
+}
+
+func kthBit (x uint32, k uint8) (uint8) {
+	return uint8((x & (1 << (k - 1))) >> (k - 1))
 }
 
 func (vm *VM) fetch(n uint8) {
@@ -57,9 +66,19 @@ func (vm *VM) fetch(n uint8) {
 
 func (vm *VM) Run() {
 	for {
+		hs := kthBit(vm.reg[flg], hf) //get halt status flag
+		if hs == 1 {
+			break //break if halt flag is set to 1
+		}
+
+		//fetch
 		vm.fetch(1)
-		opc := uint8(vm.subBits(vm.reg[ir], 6, 3))
-		opr := uint8(vm.subBits(vm.reg[ir], 2, 1))
+
+		//decode
+		opc := uint8(subBits(vm.reg[ir], 6, 3))
+		opr := uint8(subBits(vm.reg[ir], 2, 1))
+		
+		//execute
 		opLookup[opc](vm, opr)
 	}
 }
