@@ -151,6 +151,16 @@ func pop32(vm *VM, mode uint8) {
 	vm.reg[sp] -= 4
 }
 
+func call(vm *VM, mode uint8) {
+	_, src := operands(vm, false, mode, 4)
+	vm.reg[rar] = vm.reg[pc] + 1
+	vm.reg[pc] = src
+}
+
+func ret(vm *VM, mode uint8) {
+	vm.reg[pc] = vm.reg[rar]
+}
+
 var opLookup = [64]opFn{
 	nop,
 	mov8,
@@ -175,4 +185,6 @@ var opLookup = [64]opFn{
 	pop8,
 	pop16,
 	pop32,
+	call,
+	ret,
 }
