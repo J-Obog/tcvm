@@ -34,8 +34,8 @@ const ( // status flag mapping
 const ( // sys call mapping, sys calls use r5 for mapping and subsequent registers for operands
 	halt = iota
 	puts
+	gets
 )
-
 
 type VM struct {
 	reg [flg + 1]uint32

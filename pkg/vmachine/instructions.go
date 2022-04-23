@@ -192,6 +192,18 @@ func sys(vm *VM, mode uint8) {
 				ptr++
 			}
 		break
+
+		case gets:
+			ptr := vm.reg[r6]
+			var buf []byte
+			
+			fmt.Scanln(&buf)
+
+			for _, c := range buf {
+				vm.mem[ptr] = c
+				ptr++
+			}
+		break
 	}
 }
 
