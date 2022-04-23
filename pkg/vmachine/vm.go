@@ -47,7 +47,13 @@ func (vm *VM) LoadFromFile(path string) (error) {
 	return nil
 }
 
-func (vm *VM) setFlags(r uint8) {
+func (vm *VM) setMemBlock(loc uint32, sz uint8, data uint32) {
+	for i := uint8(0); i < sz; i++ {
+		vm.mem[loc + uint32(i)] = uint8(data >> (8*(sz - 1)))
+	} 
+}
+
+func (vm *VM) updateFlags(r uint8) {
 	vm.reg[flg] |= ((vm.reg[r] >> 31) << nf) // set negative flag
 	
 	if(vm.reg[r] == 0) { // set zero flag
@@ -61,9 +67,7 @@ func (vm *VM) checkFlag(flag uint8) bool {
 
 func (vm *VM) fetch(n uint8) {
 	if n > 0 {
-		var i uint8; 
-		
-		for i = 0; i < n; i++ {
+		for i := uint8(0); i < n; i++ {
 			vm.reg[ir] <<= 8
 			vm.reg[ir] |= uint32(vm.mem[vm.reg[pc]])
 			vm.reg[pc]++
