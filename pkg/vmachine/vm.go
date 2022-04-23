@@ -60,7 +60,7 @@ func (vm *VM) LoadFromFile(path string) (error) {
 	return nil
 }
 
-func (vm *VM) setMemBlock(loc uint32, sz uint8, data uint32) {
+func (vm *VM) write(loc uint32, sz uint8, data uint32) {
 	for i := uint8(0); i < sz; i++ {
 		vm.mem[loc + uint32(i)] = uint8(data >> (8*(sz - 1)))
 	} 
@@ -90,8 +90,7 @@ func (vm *VM) fetch(n uint8) {
 
 func (vm *VM) Run() {
 	for {
-		hs := ((1 << hf) & vm.reg[flg]) >> hf//get halt status flag
-		if hs == 1 {
+		if vm.checkFlag(hf) {
 			break //break if halt flag is set to 1
 		}
 
@@ -100,9 +99,9 @@ func (vm *VM) Run() {
 
 		//decode
 		opc := 63 & (vm.reg[ir] >> 2)
-		opr := uint8(3 & vm.reg[ir])
+		mod := uint8(3 & vm.reg[ir])
 		
 		//execute
-		opLookup[opc](vm, opr)
+		opLookup[opc](vm, mod)
 	}
 }

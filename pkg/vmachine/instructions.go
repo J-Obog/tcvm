@@ -40,7 +40,7 @@ func mov16(vm *VM, mode uint8) {
 	if mode <= 1 {
 		vm.reg[dest] = uint32(uint16(src))
 	} else {
-		vm.setMemBlock(vm.reg[dest], 2, src)
+		vm.write(vm.reg[dest], 2, src)
 	}
 }
 
@@ -50,7 +50,7 @@ func mov32(vm *VM, mode uint8) {
 	if mode <= 1 {
 		vm.reg[dest] = src
 	} else {
-		vm.setMemBlock(vm.reg[dest], 4, src)
+		vm.write(vm.reg[dest], 4, src)
 	}
 }
 
@@ -131,13 +131,13 @@ func push8(vm *VM, mode uint8) {
 
 func push16(vm *VM, mode uint8) {
 	_, src := operands(vm, false, mode, 2)
-	vm.setMemBlock(vm.reg[sp], 2, src)
+	vm.write(vm.reg[sp], 2, src)
 	vm.reg[sp] += 2
 }
 
 func push32(vm *VM, mode uint8) {
 	_, src := operands(vm, false, mode, 4)
-	vm.setMemBlock(vm.reg[sp], 4, src)
+	vm.write(vm.reg[sp], 4, src)
 	vm.reg[sp] += 4
 }
 
