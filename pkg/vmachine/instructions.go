@@ -139,6 +139,18 @@ func push32(vm *VM, mode uint8) {
 	vm.reg[sp] += 4
 }
 
+func pop8(vm *VM, mode uint8) {
+	vm.reg[sp]--
+}
+
+func pop16(vm *VM, mode uint8) {
+	vm.reg[sp] -= 2
+}
+
+func pop32(vm *VM, mode uint8) {
+	vm.reg[sp] -= 4
+}
+
 var opLookup = [64]opFn{
 	nop,
 	mov8,
@@ -160,4 +172,7 @@ var opLookup = [64]opFn{
 	push8,
 	push16,
 	push32,
+	pop8,
+	pop16,
+	pop32,
 }
