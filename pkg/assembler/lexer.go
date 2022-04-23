@@ -11,6 +11,12 @@ type Token struct {
 	Pos   Position
 }
 
+const ( //token type mapping
+	Identifier = iota
+	Number
+	SpecialChar
+)
+
 type Lexer struct {
 	Input []byte
 	index uint
