@@ -161,6 +161,18 @@ func ret(vm *VM, mode uint8) {
 	vm.reg[pc] = vm.reg[rar]
 }
 
+func shl(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, mode, 4)
+	vm.reg[dest] <<= src
+	vm.updateFlags(dest)
+}
+
+func shr(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, mode, 4)
+	vm.reg[dest] >>= src
+	vm.updateFlags(dest)
+}
+
 var opLookup = [64]opFn{
 	nop,
 	mov8,
@@ -187,4 +199,6 @@ var opLookup = [64]opFn{
 	pop32,
 	call,
 	ret,
+	shl,
+	shr,
 }
