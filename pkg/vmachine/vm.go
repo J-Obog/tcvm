@@ -22,7 +22,8 @@ const ( // register mapping
 	ir // instruction register
 	dsp // data segement pointer
 	sbp // stack base pointer
-	hp // heap pointer
+	hsp // heap segment pointer
+	hp //heap pointer
 	flg // flags [HALT | ZERO | NEG | POS]
 )
 
