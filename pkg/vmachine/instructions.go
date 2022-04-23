@@ -203,6 +203,7 @@ func sys(vm *VM, mode uint8) {
 				vm.mem[ptr] = c
 				ptr++
 			}
+			vm.mem[ptr] = 0
 		break
 	}
 }
