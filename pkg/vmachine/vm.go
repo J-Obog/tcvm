@@ -5,6 +5,8 @@ import (
 	"os"
 )
 
+const MAX_MEM_SIZE = (1 << 16)
+
 const ( // register mapping
 	r0 = iota // RX = general purpose register
 	r1 
@@ -38,7 +40,7 @@ const ( // sys call mapping, sys calls use r5 for mapping and subsequent registe
 
 type VM struct {
 	reg [flg + 1]uint32
-	mem [65536]uint8 //little endian
+	mem [MAX_MEM_SIZE]uint8 //little endian
 }
 
 func (vm *VM) LoadFromFile(path string) (error) {
@@ -48,7 +50,7 @@ func (vm *VM) LoadFromFile(path string) (error) {
 		return err
 	}
 
-	if len(content) > 65536 {
+	if len(content) > MAX_MEM_SIZE {
 		return errors.New("Program size too big")
 	}
 

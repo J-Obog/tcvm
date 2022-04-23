@@ -221,9 +221,6 @@ func sys(vm *VM, mode uint8) {
 	}
 }
 
-
-
-
 var opLookup = [64]opFn{
 	nop,
 	mov8,
