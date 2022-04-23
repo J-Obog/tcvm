@@ -1,40 +1,34 @@
-<alpha> ::= 'a'->'z' | 'A'->'Z'
-<digit> ::= '0'->'9'
-<number> ::= <digit> { <digit> }
-<identifier> ::= <alpha> | '_' { <alpha> | <digit> | '_'} 
-<condition> :: = 'NZ' | 'Z' | 'NN' | 'N' | 'MP' 
-<type_specifier> ::= '8' | '16' | '32'
+mov8 destination, source
+mov16 destination, source
+mov32 destination, source
 
-REGISTERS
-<register> ::= '$' ('r'('0' | '1' | '2' | '3') | 'sp')   
+add destination, source
+sub destination, source
+mul destination, source
+div destination, source
 
+and destination, source
+or destination, source
+xor destination, source
+not destination, source
 
-ADDRESS MODE
-<source> ::= <identifier> | <immediate> | <register>
+jmp source
+jz source
+jnz source
+jn source
+jnn source
 
+push8 source
+push16 source
+push32 source
+pop8
+pop16
+pop32 
+call source
 
-DIRECTIVES
-<label_directive> ::= 'LABEL' <identifier>
-<data_directive> ::= 'DATA' <type_specifier> <immediate>
+shl destination, source
+shr destination, source
 
-
-INSTRUCTION SET
-<move_instruction> ::= 'MOV' <type_specifier> (<register> | '[' <register> ']') <source>
-<arithmetic_instruction> ::= ('ADD' | 'SUB' | 'MUL' | 'DIV') <register> <source>
-<logical_instruction> ::= ('AND' | 'OR' | 'XOR' | 'NOT') <register> <source>
-
-<cmp_instruction> ::= 'CMP' <register> <source>
-<jmp_instruction> ::= 'J' <condition> <source>
-<push_instruction> ::= 'PUSH' <type_specifier> <source>
-<pop_instruction> ::= 'POP' <type_specifier>
-<call_instruction> ::= 'CALL' <source>
-<shl_instruction> ::= 'SHL' <register> <source>
-<shr_instruction> ::= 'SHR' <register> <source>
-
-<ret_instruction> ::= 'RET'
-<nop_instruction> ::= 'NOP'
-<halt_instruction> ::= 'HALT'
-
-
-SYSTEM CALLS
-<sysputs_instruction> ::= 'SYSPUTS' <source>
+ret
+nop
+sys
