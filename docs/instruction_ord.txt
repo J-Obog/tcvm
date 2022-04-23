@@ -26,5 +26,5 @@ call
 ret
 shl
 shr
-sprnt
+sysputs
 halt
