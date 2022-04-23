@@ -10,7 +10,6 @@ and
 or
 not
 xor
-cmp
 jmp
 jz
 jnz

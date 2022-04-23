@@ -2,7 +2,6 @@ package vmachine
 
 import (
 	"errors"
-	"math"
 	"os"
 )
 
@@ -39,17 +38,17 @@ const ( // sys call mapping, sys calls use r5 for mapping and subsequent registe
 
 type VM struct {
 	reg [flg + 1]uint32
-	mem [math.MaxInt32]uint8 //little endian
+	mem [65536]uint8 //little endian
 }
 
 func (vm *VM) LoadFromFile(path string) (error) {
 	content, err := os.ReadFile(path) 
-	
+
 	if err != nil { 
 		return err
 	}
 
-	if len(content) > math.MaxInt32 {
+	if len(content) > 65536 {
 		return errors.New("Program size too big")
 	}
 
@@ -96,11 +95,11 @@ func (vm *VM) Run() {
 
 		//fetch
 		vm.fetch(1)
-
+		
 		//decode
 		opc := 63 & (vm.reg[ir] >> 2)
 		mod := uint8(3 & vm.reg[ir])
-		
+
 		//execute
 		opLookup[opc](vm, mod)
 	}

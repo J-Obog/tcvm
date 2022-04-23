@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import "github.com/J-Obog/tcvm/pkg/vmachine"
 
 func main() {
-	fmt.Println("Hello World")
+	vm := vmachine.VM{}
+
+	vm.LoadFromFile("prog.obj")
+	vm.Run()
 }

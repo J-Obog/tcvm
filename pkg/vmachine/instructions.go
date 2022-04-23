@@ -1,6 +1,8 @@
 package vmachine
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type opFn func(*VM, uint8)
 
@@ -46,7 +48,6 @@ func mov16(vm *VM, mode uint8) {
 
 func mov32(vm *VM, mode uint8) {
 	dest, src := operands(vm, true, mode, 4)
-
 	if mode <= 1 {
 		vm.reg[dest] = src
 	} else {
