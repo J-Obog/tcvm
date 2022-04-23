@@ -1,5 +1,7 @@
 package vmachine
 
+import "fmt"
+
 type opFn func(*VM, uint8)
 
 func operands(vm *VM, isOp2 bool, mode uint8, opsz uint8) (uint8, uint32) { // convenience method for getting operands
@@ -173,6 +175,19 @@ func shr(vm *VM, mode uint8) {
 	vm.updateFlags(dest)
 }
 
+func sysputs(vm *VM, mode uint8) {
+	_, src := operands(vm, false, mode, 4)
+
+	for vm.mem[src] != 0 {
+		fmt.Print(string(vm.mem[src]))
+		src++
+	}
+}
+
+func halt(vm *VM, mode uint8) {
+	vm.mem[flg] |= (1 << hf)
+}
+
 var opLookup = [64]opFn{
 	nop,
 	mov8,
@@ -201,4 +216,6 @@ var opLookup = [64]opFn{
 	ret,
 	shl,
 	shr,
+	sysputs,
+	halt,
 }

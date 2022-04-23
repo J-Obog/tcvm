@@ -37,4 +37,4 @@ INSTRUCTION SET
 
 
 SYSTEM CALLS
-<sprnt_instruction> ::= 'SPRNT' <source>
+<sysputs_instruction> ::= 'SYSPUTS' <source>
