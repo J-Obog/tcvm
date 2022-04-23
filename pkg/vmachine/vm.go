@@ -19,10 +19,10 @@ const ( // register mapping
 	sp // stack pointer
 	rar // return address register 
 	ir // instruction register
-	flg // flags [HALT | ZERO | NEG]
 	dsp // data segement pointer
 	sbp // stack base pointer
 	hp // heap pointer
+	flg // flags [HALT | ZERO | NEG]
 )
 
 const ( // status flag mapping
