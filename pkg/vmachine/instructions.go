@@ -57,13 +57,25 @@ func mov32(vm *VM, mode uint8) {
 
 func add(vm *VM, mode uint8) {
 	dest, src := operands(vm, true, mode, 4)
-	vm.reg[dest] = uint32(uint64(vm.reg[dest]) + uint64(src))
+	vm.reg[dest] += src
 	vm.updateFlags(dest)
 }
 
 func sub(vm *VM, mode uint8) {
 	dest, src := operands(vm, true, mode, 4)
-	vm.reg[dest] = uint32(uint64(vm.reg[dest]) + uint64((^src)+1))
+	vm.reg[dest] += (^src)+1
+	vm.updateFlags(dest)
+}
+
+func mul(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, mode, 4)
+	vm.reg[dest] /= src
+	vm.updateFlags(dest)
+}
+
+func div(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, mode, 4)
+	vm.reg[dest] *= src
 	vm.updateFlags(dest)
 }
 
@@ -209,6 +221,9 @@ func sys(vm *VM, mode uint8) {
 	}
 }
 
+
+
+
 var opLookup = [64]opFn{
 	nop,
 	mov8,
@@ -216,8 +231,8 @@ var opLookup = [64]opFn{
 	mov32,
 	add,
 	sub,
-	//mul
-	//div
+	mul,
+	div,
 	and,
 	or,
 	not,
