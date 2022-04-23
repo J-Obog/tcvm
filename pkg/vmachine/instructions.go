@@ -2,269 +2,125 @@ package vmachine
 
 type opFn func(*VM, uint8)
 
-func nop(vm *VM, opr uint8) {
+func operands(vm *VM, isOp2 bool, isReg bool, opsz uint8) (uint8, uint32) { // convenience method for getting operands
+	if isOp2 {
+		vm.fetch(1)
+	}
+
+	d := uint8(vm.reg[ir])
+
+	if isReg {
+		vm.fetch(1)
+		return d, vm.reg[uint8(vm.reg[ir])]
+	}
+
+	vm.fetch(opsz)
+	return d, vm.reg[ir]
+}
+
+func nop(vm *VM, mode uint8) {
 	//no operation
 }
 
-func mov8(vm *VM, opr uint8) {
-	vm.fetch(1)
-	reg := uint8(vm.reg[ir])
+func mov8(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, (mode%2 != 0), 1)
 
-	vm.fetch(1)
-	src := uint8(vm.reg[ir])
-
-	switch opr {
-	case 0:
-		vm.reg[reg] |= uint32(src)
-		break
-
-	case 1:
-		vm.reg[reg] |= uint32(uint8(vm.reg[src]))
-		break
-
-	case 2:
-		vm.mem[reg] = src
-		break
-
-	case 3:
-		vm.mem[reg] = uint8(vm.reg[src])
-		break
-	}
-}
-
-func mov16(vm *VM, opr uint8) {
-	vm.fetch(1)
-	reg := uint8(vm.reg[ir])
-
-	vm.fetch(2)
-	src := uint16(vm.reg[ir])
-
-	switch opr {
-	case 0:
-		vm.reg[reg] |= uint32(src)
-		break
-
-	case 1:
-		vm.reg[reg] |= uint32(uint16(vm.reg[src]))
-		break
-
-	case 2:
-		vm.mem[reg] = uint8(src)
-		vm.mem[reg+1] = uint8(src >> 8)
-		break
-
-	case 3:
-		vm.mem[reg] = uint8(vm.reg[src])
-		vm.mem[reg+1] = uint8(vm.reg[src] >> 8)
-		break
-	}
-}
-
-func mov32(vm *VM, opr uint8) {
-	vm.fetch(1)
-	reg := uint8(vm.reg[ir])
-
-	vm.fetch(4)
-	src := vm.reg[ir]
-
-	switch opr {
-	case 0:
-		vm.reg[reg] = src
-		break
-
-	case 1:
-		vm.reg[reg] = vm.reg[src]
-		break
-
-	case 2:
-		vm.mem[reg] = uint8(src)
-		vm.mem[reg+1] = uint8(src >> 8)
-		vm.mem[reg+2] = uint8(src >> 16)
-		vm.mem[reg+3] = uint8(src >> 24)
-		break
-
-	case 3:
-		vm.mem[reg] = uint8(vm.reg[src])
-		vm.mem[reg+1] = uint8(vm.reg[src] >> 8)
-		vm.mem[reg+2] = uint8(vm.reg[src] >> 16)
-		vm.mem[reg+3] = uint8(vm.reg[src] >> 24)
-		break
-	}
-}
-
-func add(vm *VM, opr uint8) {
-	vm.fetch(1)
-	reg := uint8(vm.reg[ir])
-
-	if opr == 0 {
-		vm.fetch(4)
-		src := vm.reg[ir]
-		vm.reg[reg] = uint32(uint64(vm.reg[reg]) + uint64(src))
+	if mode <= 1 {
+		vm.reg[dest] = uint32(uint8(src))
 	} else {
-		vm.fetch(1)
-		src := uint8(vm.reg[ir])
-		vm.reg[reg] = uint32(uint64(vm.reg[reg]) + uint64(vm.reg[src]))
+		vm.mem[vm.reg[dest]] = uint8(src)
 	}
-
-	vm.setFlags(reg)
 }
 
-func sub(vm *VM, opr uint8) {
-	vm.fetch(1)
-	reg := uint8(vm.reg[ir])
+func mov16(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, (mode%2 != 0), 2)
 
-	if opr == 0 {
-		vm.fetch(4)
-		src := vm.reg[ir]
-		vm.reg[reg] = uint32(uint64(vm.reg[reg]) + uint64((^src)+1))
+	if mode <= 1 {
+		vm.reg[dest] = uint32(uint16(src))
 	} else {
-		vm.fetch(1)
-		src := uint8(vm.reg[ir])
-		vm.reg[reg] = uint32(uint64(vm.reg[reg]) + uint64((^vm.reg[src])+1))
+		vm.mem[vm.reg[dest]] = uint8(src >> 8)
+		vm.mem[vm.reg[dest]+1] = uint8(src)
 	}
-
-	vm.setFlags(reg)
 }
 
-func and(vm *VM, opr uint8) {
-	vm.fetch(1)
-	reg := uint8(vm.reg[ir])
+func mov32(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, (mode%2 != 0), 4)
 
-	if opr == 0 {
-		vm.fetch(4)
-		src := vm.reg[ir]
-		vm.reg[reg] &= src
+	if mode <= 1 {
+		vm.reg[dest] = src
 	} else {
-		vm.fetch(1)
-		src := uint8(vm.reg[ir])
-		vm.reg[reg] &= vm.reg[src]
-	}
-
-	vm.setFlags(reg)
-}
-
-func or(vm *VM, opr uint8) {
-	vm.fetch(1)
-	reg := uint8(vm.reg[ir])
-
-	if opr == 0 {
-		vm.fetch(4)
-		src := vm.reg[ir]
-		vm.reg[reg] |= src
-	} else {
-		vm.fetch(1)
-		src := uint8(vm.reg[ir])
-		vm.reg[reg] |= vm.reg[src]
-	}
-
-	vm.setFlags(reg)
-}
-
-func xor(vm *VM, opr uint8) {
-	vm.fetch(1)
-	reg := uint8(vm.reg[ir])
-
-	if opr == 0 {
-		vm.fetch(4)
-		src := vm.reg[ir]
-		vm.reg[reg] ^= src
-	} else {
-		vm.fetch(1)
-		src := uint8(vm.reg[ir])
-		vm.reg[reg] ^= vm.reg[src]
-	}
-
-	vm.setFlags(reg)
-}
-
-func not(vm *VM, opr uint8) {
-	vm.fetch(1)
-	reg := uint8(vm.reg[ir])
-	vm.reg[reg] = ^vm.reg[reg]
-
-	vm.setFlags(reg)
-}
-
-func jmp(vm *VM, opr uint8) {
-	if opr == 0 {
-		vm.fetch(4)
-		src := vm.reg[ir]
-		vm.reg[pc] = src
-	} else {
-		vm.fetch(1)
-		src := uint8(vm.reg[ir])
-		vm.reg[pc] = vm.reg[src]
+		vm.mem[vm.reg[dest]] = uint8(src >> 24)
+		vm.mem[vm.reg[dest]+1] = uint8(src >> 16)
+		vm.mem[vm.reg[dest]+2] = uint8(src >> 8)
+		vm.mem[vm.reg[dest]+3] = uint8(src)
 	}
 }
 
-func jz(vm *VM, opr uint8) {
-	var src uint32
+func add(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, (mode%2 != 0), 4)
+	vm.reg[dest] = uint32(uint64(vm.reg[dest]) + uint64(src))
+	vm.setFlags(dest)
+}
 
-	if opr == 0 {
-		vm.fetch(4)
-		src = vm.reg[ir]
-	} else {
-		vm.fetch(1)
-		r := uint8(vm.reg[ir])
-		src = vm.reg[r]
-	}
+func sub(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, (mode%2 != 0), 4)
+	vm.reg[dest] = uint32(uint64(vm.reg[dest]) + uint64((^src)+1))
+	vm.setFlags(dest)
+}
 
-	zfs := ((1 << zf) & vm.reg[flg]) >> zf
-	if zfs == 1 {
+func and(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, (mode%2 != 0), 4)
+	vm.reg[dest] &= src
+	vm.setFlags(dest)
+}
+
+func or(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, (mode%2 != 0), 4)
+	vm.reg[dest] |= src
+	vm.setFlags(dest)
+}
+
+func xor(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, (mode%2 != 0), 4)
+	vm.reg[dest] ^= src
+	vm.setFlags(dest)
+}
+
+func not(vm *VM, mode uint8) {
+	dest, src := operands(vm, true, (mode%2 != 0), 4)
+	vm.reg[dest] = ^src
+	vm.setFlags(dest)
+}
+
+func jmp(vm *VM, mode uint8) {
+	_, src := operands(vm, false, (mode%2 != 0), 4)
+	vm.reg[pc] = src
+}
+
+func jz(vm *VM, mode uint8) {
+	_, src := operands(vm, false, (mode%2 != 0), 4)
+	if vm.checkFlag(zf) {
 		vm.reg[pc] = src
 	}
 }
 
-func jnz(vm *VM, opr uint8) {
-	var src uint32
-
-	if opr == 0 {
-		vm.fetch(4)
-		src = vm.reg[ir]
-	} else {
-		vm.fetch(1)
-		r := uint8(vm.reg[ir])
-		src = vm.reg[r]
-	}
-
-	zfs := ((1 << zf) & vm.reg[flg]) >> zf
-	if zfs == 0 {
+func jnz(vm *VM, mode uint8) {
+	_, src := operands(vm, false, (mode%2 != 0), 4)
+	if !vm.checkFlag(zf) {
 		vm.reg[pc] = src
 	}
 }
 
-func jn(vm *VM, opr uint8) {
-	var src uint32
-
-	if opr == 0 {
-		vm.fetch(4)
-		src = vm.reg[ir]
-	} else {
-		vm.fetch(1)
-		r := uint8(vm.reg[ir])
-		src = vm.reg[r]
-	}
-
-	nfs := ((1 << nf) & vm.reg[flg]) >> nf
-	if nfs == 1 {
+func jn(vm *VM, mode uint8) {
+	_, src := operands(vm, false, (mode%2 != 0), 4)
+	if vm.checkFlag(nf) {
 		vm.reg[pc] = src
 	}
 }
 
-func jnn(vm *VM, opr uint8) {
-	var src uint32
-
-	if opr == 0 {
-		vm.fetch(4)
-		src = vm.reg[ir]
-	} else {
-		vm.fetch(1)
-		r := uint8(vm.reg[ir])
-		src = vm.reg[r]
-	}
-
-	nfs := ((1 << nf) & vm.reg[flg]) >> nf
-	if nfs == 0 {
+func jnn(vm *VM, mode uint8) {
+	_, src := operands(vm, false, (mode%2 != 0), 4)
+	if !vm.checkFlag(nf) {
 		vm.reg[pc] = src
 	}
 }

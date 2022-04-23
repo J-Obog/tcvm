@@ -55,12 +55,19 @@ func (vm *VM) setFlags(r uint8) {
 	}
 }
 
+func (vm *VM) checkFlag(flag uint8) bool {
+	return (((1 << flag) & vm.reg[flg]) >> flag) == 1
+}
+
 func (vm *VM) fetch(n uint8) {
-	var i uint8; 
-	for i = 0; i < n; i++ {
-		vm.reg[ir] <<= 8
-		vm.reg[ir] |= uint32(vm.mem[vm.reg[pc]])
-		vm.reg[pc]++
+	if n > 0 {
+		var i uint8; 
+		
+		for i = 0; i < n; i++ {
+			vm.reg[ir] <<= 8
+			vm.reg[ir] |= uint32(vm.mem[vm.reg[pc]])
+			vm.reg[pc]++
+		}
 	}
 }
 
