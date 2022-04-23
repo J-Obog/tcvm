@@ -175,17 +175,24 @@ func shr(vm *VM, mode uint8) {
 	vm.updateFlags(dest)
 }
 
-func sysputs(vm *VM, mode uint8) {
-	_, src := operands(vm, false, mode, 4)
+func sys(vm *VM, mode uint8) {
+	num := uint8(vm.reg[r5])
 
-	for vm.mem[src] != 0 {
-		fmt.Print(string(vm.mem[src]))
-		src++
+	switch num {
+		case halt:
+			vm.mem[flg] |= (1 << hf)
+			fmt.Print("Program exited")
+		break
+
+		case puts:
+			ptr := vm.reg[r6]
+
+			for vm.mem[ptr] != 0 {
+				fmt.Print(string(vm.mem[ptr]))
+				ptr++
+			}
+		break
 	}
-}
-
-func halt(vm *VM, mode uint8) {
-	vm.mem[flg] |= (1 << hf)
 }
 
 var opLookup = [64]opFn{
@@ -216,6 +223,5 @@ var opLookup = [64]opFn{
 	ret,
 	shl,
 	shr,
-	sysputs,
-	halt,
+	sys,
 }

@@ -1,12 +1,6 @@
 Instruction Format
 -------------------
-
 8 bit format
 
-
-[0:1] => OPERAND (64 posible instructions)
-
-[2:7] => OPCODE 
-
-
-The OPERATION specifies the instruction to be executed and the OPERAND specifies what operand(s) the instruction will take in.
+[0:1] => ADDRESS MODE 
+[2:7] => OPCODE (64 posible instructions)

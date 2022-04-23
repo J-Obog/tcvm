@@ -1,3 +1,13 @@
+A destination can be a register or an effective address. At the moment, move instructions are the 
+only instructions that utilize effective addressing to aviod UB but in the future other instructions 
+with type specifiers can utilize effective. 
+
+A special purpose register is not a valid register
+
+A source can be an immediate, memory location or a register. 
+Only certain special purpose registers are allowed (stack pointer, return address register)
+--------------------------------------
+
 mov8 destination, source
 mov16 destination, source
 mov32 destination, source
