@@ -23,13 +23,14 @@ const ( // register mapping
 	dsp // data segement pointer
 	sbp // stack base pointer
 	hp // heap pointer
-	flg // flags [HALT | ZERO | NEG]
+	flg // flags [HALT | ZERO | NEG | POS]
 )
 
 const ( // status flag mapping
 	hf = iota
 	zf
 	nf
+	pf
 )
 
 const ( // sys call mapping, sys calls use r5 for mapping and subsequent registers for operands
@@ -68,8 +69,10 @@ func (vm *VM) write(loc uint32, sz uint8, data uint32) {
 }
 
 func (vm *VM) updateFlags(r uint8) {
-	vm.reg[flg] |= ((vm.reg[r] >> 31) << nf) // set negative flag
-	
+	sgn := (vm.reg[r] >> 31)
+	vm.reg[flg] |= (sgn << nf) // set negative flag
+	vm.reg[flg] |= ((1 ^ sgn) << pf) // set positive flag
+
 	if(vm.reg[r] == 0) { // set zero flag
 		vm.reg[flg] |= (1 << zf) 
 	}

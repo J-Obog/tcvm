@@ -136,6 +136,20 @@ func jnn(vm *VM, mode uint8) {
 	}
 }
 
+func jp(vm *VM, mode uint8) {
+	_, src := operands(vm, false, mode, 4)
+	if !vm.checkFlag(pf) {
+		vm.reg[pc] = src
+	}
+}
+
+func jnp(vm *VM, mode uint8) {
+	_, src := operands(vm, false, mode, 4)
+	if !vm.checkFlag(pf) {
+		vm.reg[pc] = src
+	}
+}
+
 func push8(vm *VM, mode uint8) {
 	_, src := operands(vm, false, mode, 1)
 	vm.mem[vm.reg[sp]] = uint8(src)
@@ -239,6 +253,8 @@ var opLookup = [64]opFn{
 	jnz,
 	jn,
 	jnn,
+	jp,
+	jnp,
 	push8,
 	push16,
 	push32,
