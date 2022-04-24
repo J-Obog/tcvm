@@ -1,5 +1,9 @@
 package assembler
 
+import (
+	"regexp"
+)
+
 type Position struct {
 	Column uint
 	Line   uint
@@ -18,7 +22,13 @@ const ( //token type mapping
 )
 
 type Lexer struct {
-	Input []byte
-	index uint
+	Input string
+	index int
 	Pos   Position
+}
+
+func NewLexer(input string) *Lexer {
+	rxp, _ := regexp.Compile(`\;.*\n`)
+	stripped := rxp.ReplaceAllString(input, " ")
+	return &Lexer{Input: stripped}
 }
