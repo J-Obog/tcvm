@@ -1,31 +1,30 @@
 package assembler
 
-type Instruction struct {
-	Opcode    uint8
-	Type      uint8
-	Operands  []uint32
-	SymbolRef string
+type TextElement struct {
+	Type  uint8
+	Size  uint8
+	Value []byte
 }
 
-type SymbolTable map[string]struct {
-	Section uint8
-	Offset  uint32
-}
+const ( // node type mapping
+	instruction = iota //
+	register
+	effective
+	label
+	immediate
+)
 
 type Program struct {
-	StartAddress uint32        // entry point of program, specified by __start__ lable in text section
-	DataStart    uint32        // start of data segment
-	Size         uint32        // size of entire program
-	Data         []byte        //data segment
-	Tbl          SymbolTable   //table to map labels to addresses
-	Code         []Instruction //list of instructions
+	ExternalLabels []uint32          //useful for linking programs
+	DataSegment    []byte            //.data
+	SymbolTable    map[string]uint32 //labels within program
+	TextSegment    []byte            //.text
 }
 
 type Parser struct {
 	lex *Lexer //Lexer struct reference
 }
 
-func (parser *Parser) Parse() *Program {
-	//returns a pointer to a newly assembled program
-	return nil
+func (parser *Parser) Parse() {
+
 }
