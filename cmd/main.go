@@ -1,16 +1,21 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 
 	"github.com/J-Obog/tcvm/pkg/assembler"
 )
 
 func main() {
-	b := bytes.NewReader([]byte("[mov16 r0 12345]"))
-	l := assembler.Lexer{Scanner: b}
+	b := []byte("mov [r0] 5")
+	l := assembler.Lexer{Input: b}
 
-	tkn, _ := l.NextToken()
-	fmt.Println(tkn)
+	for {
+		tkn, _ := l.NextToken()
+		if tkn == nil {
+			break
+		} 
+
+		fmt.Println(tkn)
+	}
 }
