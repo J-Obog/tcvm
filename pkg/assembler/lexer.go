@@ -1,7 +1,7 @@
 package assembler
 
 import (
-	"bufio"
+	"bytes"
 	"errors"
 	"io"
 	"unicode"
@@ -26,7 +26,7 @@ const ( //token type mapping
 
 type Lexer struct {
 	Input string
-	scanner *bufio.Reader
+	scanner *bytes.Reader
 	Pos   Position
 }
 
