@@ -1,7 +1,10 @@
 package assembler
 
 import (
-	"regexp"
+	"bufio"
+	"errors"
+	"io"
+	"unicode"
 )
 
 type Position struct {
@@ -23,12 +26,50 @@ const ( //token type mapping
 
 type Lexer struct {
 	Input string
-	index int
+	scanner *bufio.Reader
 	Pos   Position
 }
 
-func NewLexer(input string) *Lexer {
-	rxp, _ := regexp.Compile(`\;.*\n`)
-	stripped := rxp.ReplaceAllString(input, " ")
-	return &Lexer{Input: stripped}
+func (lex *Lexer) lexNum() *Token {
+	var buf string
+	p := lex.Pos
+	for {
+		r, _, err := lex.scanner.ReadRune()
+		if err == io.EOF || !unicode.IsDigit(r) {
+			return &Token{Type: Number, Image: buf, Pos: p}
+		}
+		buf += string(r)
+	}
+}
+
+func (lex *Lexer) lexIdent() *Token {
+	var buf string
+	p := lex.Pos
+	for {
+		r, _, err := lex.scanner.ReadRune()
+		if err == io.EOF || !(unicode.IsDigit(r) || unicode.IsLetter(r) || r == '_') {
+			return &Token{Type: Identifier, Image: buf, Pos: p}
+		}
+		buf += string(r)
+	}
+}
+
+func (lex *Lexer) NextToken() (*Token, error) {
+	for {
+		r, _, err := lex.scanner.ReadRune()
+		if err == io.EOF {
+			return nil, nil
+		} else if !unicode.IsSpace(r) {
+			continue
+		} else if unicode.IsDigit(r) {
+			return lex.lexNum(), nil
+		} else if unicode.IsLetter(r) || r == '_' {
+			return lex.lexIdent(), nil
+		} else if r == '[' {
+			p := lex.Pos
+			return &Token{Type: SpecialChar, Image: string(r), Pos: p}, nil
+		} else {
+			return nil, errors.New("Invalid Token")
+		}
+	}
 }
