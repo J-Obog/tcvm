@@ -140,22 +140,41 @@ func (p *Parser) parseInstruction() Statement {
 	a := opcodes[opc].Arity 
 
 	if a == 0 { // zero operand instruction
+		p.advance()
 		return &Instruction{Opcode: opc}	
 	} else if a == 1 {// one operand instruction
-		src := p.getOperand() 
-		if opc == "not" && src.Mode != Register {
-			panic("Invalid source type")
+		s := p.getOperand() //source
+		if (opc == "not" && (s.Mode != Register)) || (s.Mode == ERegister) {
+			panic("Invalid combination of opcode and operands")
 		}	
 		if opc == "push8" {
-			src.Size = 1
+			s.Size = 1
 		}
 		if opc == "push16" {
-			src.Size = 2
+			s.Size = 2
+		}
+		p.advance()
+		return &Instruction{Opcode: opc, Operands: []Operand{s}}
+	} else { // two operand instruction
+		d := p.getOperand() //destination
+		s := p.getOperand() //source
+
+		if ((d.Mode == ERegister) && (opc[:3] != "mov")) || 
+			(s.Mode == ERegister) ||
+			(d.Mode > Register) {
+				
+			panic("Invalid combination of opcode and operands")
 		}
 
-		return &Instruction{Opcode: opc, Operands: []Operand{src}}
-	} else { // two operand instruction
-		return nil
+		if opc == "mov8" {
+			s.Size = 1
+		}
+		if opc == "mov16" {
+			s.Size = 2
+		}
+		
+		p.advance()
+		return &Instruction{Opcode: opc, Operands: []Operand{d, s}}
 	}
 } 
 

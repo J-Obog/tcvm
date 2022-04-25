@@ -26,8 +26,8 @@ func (dat *Data) String() string {
 }
 
 const ( //operand modes
-	Register = iota
-	ERegister
+	ERegister = iota
+	Register 
 	Memory
 	Immediate
 )
