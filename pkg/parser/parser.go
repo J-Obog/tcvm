@@ -42,19 +42,18 @@ func (p *Parser) advance() {
 
 
 func (p *Parser) parseData() Statement {
-	d := &Data{}
 	p.advance()
 
 	if p.ct == nil {
 		panic("Unexpected EOF")
 	}
 
-	if v, ok := dataTypes[p.ct.Image]; ok {
-		d.Size = v
-	} else {
+	dsz, ok := dataTypes[p.ct.Image]
+
+	if !ok {
 		panic("Invalid datatype used in data definition")
 	}
-	
+
 	p.advance()
 	
 	if p.ct == nil {
@@ -70,10 +69,9 @@ func (p *Parser) parseData() Statement {
         panic(err)
     }
 
-	d.Value = uint32(val)
 	p.advance()
 
-	return d
+	return &Data{Size: dsz, Value: uint32(val)}
 }
 
 func (p *Parser) parseLabel() Statement {
