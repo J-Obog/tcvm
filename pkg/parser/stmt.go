@@ -1,5 +1,7 @@
 package parser
 
+import "fmt"
+
 type Statement interface {
 	String() string
 }
@@ -10,7 +12,7 @@ type Label struct {
 }
 
 func (lbl *Label) String() string {
-	return "[LABEL]"
+	return fmt.Sprintf("[LABEL: %s]", lbl.Name)
 }
 
 type Data struct {

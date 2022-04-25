@@ -1,6 +1,8 @@
 package parser
 
-import "github.com/J-Obog/tcvm/pkg/lexer"
+import (
+	"github.com/J-Obog/tcvm/pkg/lexer"
+)
 
 type Parser struct {
 	tokens []*lexer.Token //list of tokens
@@ -36,6 +38,32 @@ func (p *Parser) advance() {
 	}
 }
 
-func (parser *Parser) NextStatement() Statement {
-	return nil
+func (p *Parser) parseLabel() Statement {
+	p.advance()
+
+	if p.ct == nil || p.ct.Type != lexer.Identifier {
+		panic("Error parsing label")
+	}
+
+	lbl := &Label{Name: p.ct.Image}
+	p.advance()
+
+
+	return lbl
+}
+
+func (p *Parser) NextStatement() Statement {
+	if p.ct == nil {
+		return nil
+	}
+
+	if p.ct.Type == lexer.Identifier {
+		txt := p.ct.Image
+
+		if txt == "label" {
+			return p.parseLabel()
+		}
+	}
+
+	panic("Invalid statement")
 }
