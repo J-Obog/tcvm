@@ -20,7 +20,6 @@ const ( // register mapping
 	sp // stack pointer
 	rar // return address register 
 	ir // instruction register
-	dsp // data segement pointer
 	sbp // stack base pointer
 	hsp // heap segment pointer
 	hp //heap pointer
