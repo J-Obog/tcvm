@@ -23,7 +23,24 @@ type Parser struct {
 	pos int //parser position
 }
 
+func New(lex *lexer.Lexer) *Parser {
+	tkn := lex.NextToken()
+	var st *lexer.Token
+	p := &Parser{}
+
+	for tkn != nil {
+		p.tokens = append(p.tokens, tkn)
+		tkn = lex.NextToken()
+	}
+
+	if len(p.tokens) > 0 {
+		st = p.tokens[0]
+	}
+
+	p.ct = st
+	return p
+}
 
 func (parser *Parser) Parse() {
-
+	
 }
