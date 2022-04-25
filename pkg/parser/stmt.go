@@ -12,7 +12,7 @@ type Label struct {
 }
 
 func (lbl *Label) String() string {
-	return fmt.Sprintf("[LABEL: %s]", lbl.Name)
+	return fmt.Sprintf("[LABEL %s]", lbl.Name)
 }
 
 type Data struct {
@@ -45,7 +45,7 @@ type Instruction struct {
 }
 
 func (op *Instruction) String() string {
-	return "[INSTRUCTION]"
+	return fmt.Sprintf("[INSTRUCTION %s %v]", op.Opcode, op.Operands)
 }
 
 func (op *Instruction) TotalSize() uint8 {
