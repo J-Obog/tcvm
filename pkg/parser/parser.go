@@ -87,16 +87,76 @@ func (p *Parser) parseLabel() Statement {
 	return &Label{Name: lbl}
 }
 
+func (p *Parser) getOperand() Operand {
+	p.advance()
+
+	if p.ct == nil {
+		panic("Unexpected EOF")
+	}
+	
+	if p.ct.Type == lexer.Number {
+		return Operand{Size: 4, Mode: Immediate, Value: p.ct.Image} 
+	}
+
+	if p.ct.Type == lexer.Identifier {
+		_, ok := registers[p.ct.Image]
+
+		if ok {
+			return Operand{Size: 1, Mode: Register, Value: p.ct.Image}
+		}
+
+		return Operand{Size: 4, Mode: Memory, Value: p.ct.Image}
+	}
+
+	if p.ct.Image == "[" {
+		p.advance()
+		
+		if p.ct == nil {
+			panic("Unexpected EOF")
+		}
+
+		r := p.ct.Image
+		_, ok := registers[r]
+		if !ok || r[0] != 'r' { //if register is invalid or trying to dereference a special purpose register
+			panic("Invalid effective address")
+		}
+
+		p.advance()
+
+		if p.ct == nil {
+			panic("Unexpected EOF")
+		}
+
+		if p.ct.Image == "]" {
+			return Operand{Size: 1, Mode: ERegister, Value: r}
+		}
+	}
+
+	panic("Invalid source")
+} 
+
 func (p *Parser) parseInstruction() Statement {
 	opc := p.ct.Image
 	a := opcodes[opc].Arity 
-	p.advance()
 
 	if a == 0 { // zero operand instruction
 		return &Instruction{Opcode: opc}	
-	} 
-	
-	return nil
+	} else if a == 1 {// one operand instruction
+		src := p.getOperand() 
+		if opc == "not" && src.Mode != Register {
+			panic("Invalid source type")
+		}	
+		if opc == "push8" {
+			src.Size = 1
+		}
+		if opc == "push16" {
+			src.Size = 2
+		}
+
+		return &Instruction{Opcode: opc, Operands: []Operand{src}}
+	} else { // two operand instruction
+		return nil
+	}
 } 
 
 func (p *Parser) NextStatement() Statement {

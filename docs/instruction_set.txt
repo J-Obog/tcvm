@@ -20,7 +20,7 @@ div destination, source
 and destination, source
 or destination, source
 xor destination, source
-not destination, source
+not destination
 
 jmp source
 jz source
