@@ -2,15 +2,10 @@ package lexer
 
 import "errors"
 
-type Position struct {
-	Column uint
-	Line   uint
-}
-
 type Lexer struct {
 	Input []byte
-	Pos   Position
-	index int
+	cb byte //current byte
+	pos int //lex position
 }
 
 func IsAlpha(b byte) bool {
@@ -25,53 +20,54 @@ func IsDigit(b byte) bool {
 	return b >= '0' && b <= '9'
 }
 
-func (lex *Lexer) curr() byte {
-	if lex.index >= len(lex.Input) {
-		return 0
-	}
-	return lex.Input[lex.index]
+func New(input []byte) *Lexer {
+	var sb byte
+
+	if len(input) > 0 {
+		sb = input[0]	
+	} 
+	return &Lexer{Input: input, cb: sb}
 }
 
+
 func (lex *Lexer) advance() {
-	if lex.curr() == '\n' {
-		lex.Pos.Column = 0
-		lex.Pos.Line++
+	lex.pos++
+	
+	if lex.pos >= len(lex.Input) {
+		lex.cb = 0
 	} else {
-		lex.Pos.Column++
+		lex.cb = lex.Input[lex.pos]
 	}
-	lex.index++
 }
 
 func (lex *Lexer) lexNum() *Token {
-	p := lex.Pos
 	var buf string
 
-	for IsDigit(lex.curr()){
-		buf += string(lex.curr())
+	for IsDigit(lex.cb){
+		buf += string(lex.cb)
 		lex.advance()
 	}
 
-	return &Token{Type: Number, Image: buf, Pos: p}
+	return &Token{Type: Number, Image: buf}
 }
 
 func (lex *Lexer) lexIdent() *Token {
-	p := lex.Pos
 	var buf string
 
-	for IsAlpha(lex.curr()) || IsDigit(lex.curr()) || lex.curr() == '_' {
-		buf += string(lex.curr())
+	for IsAlpha(lex.cb) || IsDigit(lex.cb) || lex.cb == '_' {
+		buf += string(lex.cb)
 		lex.advance()
 	}
 
-	return &Token{Type: Identifier, Image: buf, Pos: p}
+	return &Token{Type: Identifier, Image: buf}
 }
 
 func (lex *Lexer) NextToken() (*Token, error) {
-	for IsWhiteSpace(lex.curr()) {
+	for IsWhiteSpace(lex.cb) {
 		lex.advance()
 	}
 
-	c := lex.curr()
+	c := lex.cb
 
 	if c == 0 {
 		return nil, nil
@@ -86,9 +82,8 @@ func (lex *Lexer) NextToken() (*Token, error) {
 	} 
 
 	if c == '[' || c == ']' {
-		p := lex.Pos
 		lex.advance()
-		return &Token{Type: SpecialChar, Image: string(c), Pos: p}, nil
+		return &Token{Type: SpecialChar, Image: string(c)}, nil
 	}
 
 	return nil, errors.New("Unrecognized token")
