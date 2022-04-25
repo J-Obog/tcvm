@@ -9,10 +9,18 @@ type Label struct {
 	Name string
 }
 
+func (lbl *Label) String() string {
+	return "[LABEL]"
+}
+
 type Data struct {
 	Statement
 	Size  uint8
 	Value []byte
+}
+
+func (dat *Data) String() string {
+	return "[DATA]"
 }
 
 const ( //operand modes
@@ -32,6 +40,10 @@ type Instruction struct {
 	Statement
 	Opcode   string
 	Operands []Operand
+}
+
+func (op *Instruction) String() string {
+	return "[INSTRUCTION]"
 }
 
 func (op *Instruction) TotalSize() uint8 {

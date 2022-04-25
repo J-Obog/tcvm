@@ -36,6 +36,6 @@ func (p *Parser) advance() {
 	}
 }
 
-func (parser *Parser) Parse() {
-	
+func (parser *Parser) NextStatement() Statement {
+	return nil
 }
