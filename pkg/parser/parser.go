@@ -81,23 +81,21 @@ func (p *Parser) parseLabel() Statement {
 		panic("Error parsing label")
 	}
 
-	lbl := &Label{Name: p.ct.Image}
+	lbl := p.ct.Image
 	p.advance()
 
-	return lbl
+	return &Label{Name: lbl}
 }
 
-func (p *Parser) parseZeroOps() Statement {
-	op := p.ct.Image
+func (p *Parser) parseInstruction() Statement {
+	opc := p.ct.Image
+	a := opcodes[opc].Arity 
 	p.advance()
-	return &Instruction{Opcode: op}
-} 
 
-func (p *Parser) parseOneOp() Statement {
-	return nil
-} 
-
-func (p *Parser) parseTwoOps() Statement {
+	if a == 0 { // zero operand instruction
+		return &Instruction{Opcode: opc}	
+	} 
+	
 	return nil
 } 
 
@@ -117,16 +115,9 @@ func (p *Parser) NextStatement() Statement {
 			return p.parseData()
 		}
 
-		if op, ok := opcodes[txt]; ok { //parsing an instruction
-			a := op.Arity
-			
-			if a == 0 {
-				return p.parseZeroOps()
-			} else if a == 1 {
-				return p.parseOneOp()
-			} else {
-				return p.parseTwoOps()
-			}
+		_, ok := opcodes[txt] 
+		if ok {
+			return p.parseInstruction()
 		}
 	}
 
