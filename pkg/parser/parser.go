@@ -41,6 +41,16 @@ func New(lex *lexer.Lexer) *Parser {
 	return p
 }
 
+func (p *Parser) advance() {
+	p.pos++
+
+	if p.pos >= len(p.tokens) {
+		p.ct = nil
+	} else {
+		p.ct = p.tokens[p.pos]
+	}
+}
+
 func (parser *Parser) Parse() {
 	
 }

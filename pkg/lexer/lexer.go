@@ -27,59 +27,59 @@ func New(input []byte) *Lexer {
 	return &Lexer{input: input, cb: sb}
 }
 
-func (lex *Lexer) advance() {
-	lex.pos++
+func (l *Lexer) advance() {
+	l.pos++
 
-	if lex.pos >= len(lex.input) {
-		lex.cb = 0
+	if l.pos >= len(l.input) {
+		l.cb = 0
 	} else {
-		lex.cb = lex.input[lex.pos]
+		l.cb = l.input[l.pos]
 	}
 }
 
-func (lex *Lexer) lexNum() *Token {
+func (l *Lexer) lexNum() *Token {
 	var buf string
 
-	for IsDigit(lex.cb) {
-		buf += string(lex.cb)
-		lex.advance()
+	for IsDigit(l.cb) {
+		buf += string(l.cb)
+		l.advance()
 	}
 
 	return &Token{Type: Number, Image: buf}
 }
 
-func (lex *Lexer) lexIdent() *Token {
+func (l *Lexer) lexIdent() *Token {
 	var buf string
 
-	for IsAlpha(lex.cb) || IsDigit(lex.cb) || lex.cb == '_' {
-		buf += string(lex.cb)
-		lex.advance()
+	for IsAlpha(l.cb) || IsDigit(l.cb) || l.cb == '_' {
+		buf += string(l.cb)
+		l.advance()
 	}
 
 	return &Token{Type: Identifier, Image: buf}
 }
 
-func (lex *Lexer) NextToken() *Token {
-	for IsWhiteSpace(lex.cb) {
-		lex.advance()
+func (l *Lexer) NextToken() *Token {
+	for IsWhiteSpace(l.cb) {
+		l.advance()
 	}
 
-	c := lex.cb
+	c := l.cb
 
 	if c == 0 {
 		return nil
 	}
 
 	if IsDigit(c) {
-		return lex.lexNum()
+		return l.lexNum()
 	}
 
 	if IsAlpha(c) || c == '_' {
-		return lex.lexIdent()
+		return l.lexIdent()
 	}
 
 	if c == '[' || c == ']' {
-		lex.advance()
+		l.advance()
 		return &Token{Type: SpecialChar, Image: string(c)}
 	}
 
