@@ -18,8 +18,11 @@ const ( // node type mapping
 )
 
 type Parser struct {
-	lex *lexer.Lexer //Lexer struct reference
+	tokens []*lexer.Token //list of tokens
+	ct *lexer.Token //current token
+	pos int //parser position
 }
+
 
 func (parser *Parser) Parse() {
 

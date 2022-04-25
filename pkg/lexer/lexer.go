@@ -1,11 +1,9 @@
 package lexer
 
-import "errors"
-
 type Lexer struct {
-	Input []byte
-	cb byte //current byte
-	pos int //lex position
+	input []byte
+	cb    byte //current byte
+	pos   int  //lex position
 }
 
 func IsAlpha(b byte) bool {
@@ -24,26 +22,25 @@ func New(input []byte) *Lexer {
 	var sb byte
 
 	if len(input) > 0 {
-		sb = input[0]	
-	} 
-	return &Lexer{Input: input, cb: sb}
+		sb = input[0]
+	}
+	return &Lexer{input: input, cb: sb}
 }
-
 
 func (lex *Lexer) advance() {
 	lex.pos++
-	
-	if lex.pos >= len(lex.Input) {
+
+	if lex.pos >= len(lex.input) {
 		lex.cb = 0
 	} else {
-		lex.cb = lex.Input[lex.pos]
+		lex.cb = lex.input[lex.pos]
 	}
 }
 
 func (lex *Lexer) lexNum() *Token {
 	var buf string
 
-	for IsDigit(lex.cb){
+	for IsDigit(lex.cb) {
 		buf += string(lex.cb)
 		lex.advance()
 	}
@@ -62,7 +59,7 @@ func (lex *Lexer) lexIdent() *Token {
 	return &Token{Type: Identifier, Image: buf}
 }
 
-func (lex *Lexer) NextToken() (*Token, error) {
+func (lex *Lexer) NextToken() *Token {
 	for IsWhiteSpace(lex.cb) {
 		lex.advance()
 	}
@@ -70,21 +67,21 @@ func (lex *Lexer) NextToken() (*Token, error) {
 	c := lex.cb
 
 	if c == 0 {
-		return nil, nil
+		return nil
 	}
 
 	if IsDigit(c) {
-		return lex.lexNum(), nil
+		return lex.lexNum()
 	}
 
 	if IsAlpha(c) || c == '_' {
-		return lex.lexIdent(), nil
-	} 
+		return lex.lexIdent()
+	}
 
 	if c == '[' || c == ']' {
 		lex.advance()
-		return &Token{Type: SpecialChar, Image: string(c)}, nil
+		return &Token{Type: SpecialChar, Image: string(c)}
 	}
 
-	return nil, errors.New("Unrecognized token")
+	panic("Unrecognized token")
 }
