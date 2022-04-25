@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	l := lexer.New([]byte("lbl myloc"))
+	l := lexer.New([]byte("data b 122"))
 	p := parser.New(l)
 
 	st := p.NextStatement()

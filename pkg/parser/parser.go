@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"strconv"
+
 	"github.com/J-Obog/tcvm/pkg/lexer"
 )
 
@@ -38,6 +40,41 @@ func (p *Parser) advance() {
 	}
 }
 
+
+func (p *Parser) parseData() Statement {
+	d := &Data{}
+	p.advance()
+
+	if p.ct == nil {
+		panic("Unexpected EOF")
+	}
+
+	if v, ok := dataTypes[p.ct.Image]; ok {
+		d.Size = v
+	} else {
+		panic("Invalid datatype used in data definition")
+	}
+	
+	p.advance()
+	
+	if p.ct == nil {
+		panic("Unexpected EOF")
+	}
+
+	if p.ct.Type != lexer.Number {
+		panic("Data must be of type num literal")
+	}
+
+    val, err := strconv.ParseUint(p.ct.Image, 10, 32)
+    if err != nil {
+        panic(err)
+    }
+
+	d.Value = uint32(val)
+
+	return d
+}
+
 func (p *Parser) parseLabel() Statement {
 	p.advance()
 
@@ -62,6 +99,10 @@ func (p *Parser) NextStatement() Statement {
 
 		if txt == "label" {
 			return p.parseLabel()
+		}
+
+		if txt == "data" {
+			return p.parseData()
 		}
 	}
 

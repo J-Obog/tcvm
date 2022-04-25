@@ -18,11 +18,11 @@ func (lbl *Label) String() string {
 type Data struct {
 	Statement
 	Size  uint8
-	Value []byte
+	Value uint32
 }
 
 func (dat *Data) String() string {
-	return "[DATA]"
+	return fmt.Sprintf("[DATA %dB %d]", dat.Size, dat.Value)
 }
 
 const ( //operand modes
