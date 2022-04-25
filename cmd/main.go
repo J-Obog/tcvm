@@ -8,9 +8,13 @@ import (
 )
 
 func main() {
-	l := lexer.New([]byte("data b 122"))
+	l := lexer.New([]byte("label myloc\n\tdata b 122\n\nlabel __start__ nop"))
 	p := parser.New(l)
 
-	st := p.NextStatement()
-	fmt.Println(st)
+	s := p.NextStatement()
+
+	for s != nil {
+		fmt.Println(s)
+		s = p.NextStatement()
+	}
 }

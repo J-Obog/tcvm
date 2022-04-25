@@ -71,6 +71,7 @@ func (p *Parser) parseData() Statement {
     }
 
 	d.Value = uint32(val)
+	p.advance()
 
 	return d
 }
@@ -85,9 +86,22 @@ func (p *Parser) parseLabel() Statement {
 	lbl := &Label{Name: p.ct.Image}
 	p.advance()
 
-
 	return lbl
 }
+
+func (p *Parser) parseZeroOps() Statement {
+	op := p.ct.Image
+	p.advance()
+	return &Instruction{Opcode: op}
+} 
+
+func (p *Parser) parseOneOp() Statement {
+	return nil
+} 
+
+func (p *Parser) parseTwoOps() Statement {
+	return nil
+} 
 
 func (p *Parser) NextStatement() Statement {
 	if p.ct == nil {
@@ -103,6 +117,18 @@ func (p *Parser) NextStatement() Statement {
 
 		if txt == "data" {
 			return p.parseData()
+		}
+
+		if op, ok := opcodes[txt]; ok { //parsing an instruction
+			a := op.Arity
+			
+			if a == 0 {
+				return p.parseZeroOps()
+			} else if a == 1 {
+				return p.parseOneOp()
+			} else {
+				return p.parseTwoOps()
+			}
 		}
 	}
 
