@@ -1,6 +1,0 @@
-Instruction Format
--------------------
-8 bit format
-
-[0:1] => ADDRESS MODE 
-[2:7] => OPCODE (64 posible instructions)

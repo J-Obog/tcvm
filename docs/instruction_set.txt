@@ -1,44 +1,53 @@
-A destination can be a register or an effective address. At the moment, move instructions are the 
-only instructions that utilize effective addressing to aviod UB but in the future other instructions 
-with type specifiers can utilize effective. 
+==============  INSTRUCTION FMT ================
+INSTRUCTION
+8 bits => 5 bits for Opcode, 3 bits for instruction suffix
 
-A special purpose register is not a valid register
+An example of an instruction suffix can be seen in the 'mov8' instruction.
+The opcode would be the 'mov' mnemonic with the suffix being '8' to specify
+that the value being moved into the destination is 8 bits or 1 byte. 
 
-A source can be an immediate, memory location or a register. 
-Only certain special purpose registers are allowed (stack pointer, return address register)
---------------------------------------
+OPERANDS HEADER
+8 bits => 4 bits for the destination, 4 bits for the source
 
-mov8 destination, source
-mov16 destination, source
-mov32 destination, source
+For instructions with one or two operands, the next byte after the INSTRUCTION
+is the OPERANDS HEADER which describes what destination and source are for a 
+given instruction. Below is the table for the operand types.
 
-add destination, source
-sub destination, source
-mul destination, source
-div destination, source
+OPERAND TYPE
+0000    <none>      Instruction doesn't use this operand
+0001    register    A CPU Register    
+0010    [register]  The effective address of a register
+0011    [memory]    The effective address of a location in memory
+0100    immediate   A numeric literal
 
-and destination, source
-or destination, source
-xor destination, source
-not destination
 
-jmp source
-jz source
-jnz source
-jn source
-jnn source
-
-push8 source
-push16 source
-push32 source
-pop8
-pop16
-pop32 
-call source
-
-shl destination, source
-shr destination, source
-
-ret
+============== INSTRUCTION SET ================
 nop
+mov[size]    destination, source
+add[size]    destination, source
+sub[size]    destination, source
+mul[size]    destination, source
+div[size]    destination, source
+and[size]    destination, source
+or[size]     destination, source
+not[size]    destination
+xor[size]    destination, source
+cmp[size]    destination, source
+jmp[cond]    source
+push[size]   source
+pop[size]       
+call         source
+ret
+shl[size]   destination, source
+shr[size]   destination, source
 sys
+
+============== DIRECTIVES ================
+label       identifier
+D[size]     immediate
+
+--------------------------------------------------------
+destination = register | [register] | [memory] 
+source = register | [register] | [memory] | memory | immediate
+size = 8 | 16 | 32
+cond = Z | NZ | N | NN | P | NP

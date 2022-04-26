@@ -34,3 +34,11 @@ func New(p *parser.Parser) *Assembler {
 	a.size = loc
 	return a
 }
+
+func (a *Assembler) encodeHeader() []byte {
+	return nil
+}
+
+func (a *Assembler) Assemble(out string) {
+	
+}

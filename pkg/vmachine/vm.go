@@ -41,7 +41,7 @@ const ( // sys call mapping, sys calls use r5 for mapping and subsequent registe
 
 type VM struct {
 	reg [flg + 1]uint32
-	mem [MAX_MEM_SIZE]uint8 //little endian
+	mem [MAX_MEM_SIZE]uint8 //big endian
 }
 
 func (vm *VM) LoadFromFile(path string) (error) {
