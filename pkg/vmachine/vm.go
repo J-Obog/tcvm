@@ -67,7 +67,6 @@ func (vm *VM) getFlag(flag uint8) bool {
 	return (((1 << flag) & vm.flags) >> flag) == 1
 }
 
-
 func (vm *VM) Run() {
 	for {
 		if vm.getFlag(F_HALT) {

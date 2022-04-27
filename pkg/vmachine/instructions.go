@@ -2,11 +2,103 @@ package vmachine
 
 type opFn func(*VM, byte, byte, byte)
 
-func foobar(vm *VM, suffix byte, destination byte, source byte) {
+func nop(vm *VM, suffix byte, destination byte, source byte) {
+	//no operation
+}
+
+func mov(vm *VM, suffix byte, destination byte, source byte) {
 
 }
 
-var opLookup = [32]opFn{}
+func add(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func sub(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func mul(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func div(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func and(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func or(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func not(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func xor(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func cmp(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func jmp(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func push(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func pop(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func call(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func ret(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func shl(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func shr(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+func sys(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
+var opLookup = [32]opFn{
+	nop,
+	mov,
+	add,
+	sub,
+	mul,
+	div,
+	and,
+	or,
+	not,
+	xor,
+	cmp,
+	jmp,
+	push,
+	pop,
+	call,
+	ret,
+	shl,
+	shr,
+	sys,
+}
 
 /*package vmachine
 
