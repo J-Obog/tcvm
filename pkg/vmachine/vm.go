@@ -5,7 +5,6 @@ import (
 	"os"
 )
 
-const MAX_MEM_SIZE = (1 << 16)
 
 const ( // register mapping
 	r0 = iota // RX = general purpose register
@@ -16,8 +15,8 @@ const ( // register mapping
 	r5
 	r6
 	r7
-	pc // program counter
 	sp // stack pointer
+	pc // program counter
 	rar // return address register 
 	ir // instruction register
 	sbp // stack base pointer
