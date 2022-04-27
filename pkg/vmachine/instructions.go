@@ -1,5 +1,11 @@
 package vmachine
 
+type opFn func(*VM, byte, byte, byte)
+
+var opLookup = [32]opFn{}
+
+/*package vmachine
+
 import (
 	"fmt"
 )
@@ -223,7 +229,7 @@ func sys(vm *VM, mode uint8) {
 		case gets:
 			ptr := vm.reg[r6]
 			var buf []byte
-			
+
 			fmt.Scanln(&buf)
 
 			for _, c := range buf {
@@ -266,4 +272,4 @@ var opLookup = [64]opFn{
 	shl,
 	shr,
 	sys,
-}
+}*/

@@ -6,41 +6,24 @@ import (
 )
 
 
-const ( // register mapping
-	r0 = iota // RX = general purpose register
-	r1 
-	r2 
-	r3  
-	r4 
-	r5
-	r6
-	r7
-	sp // stack pointer
-	pc // program counter
-	rar // return address register 
-	ir // instruction register
-	sbp // stack base pointer
-	hsp // heap segment pointer
-	hp //heap pointer
-	flg // flags [HALT | ZERO | NEG | POS]
-)
-
-const ( // status flag mapping
-	hf = iota
-	zf
-	nf
-	pf
-)
-
-const ( // sys call mapping, sys calls use r5 for mapping and subsequent registers for operands
-	halt = iota
-	puts
-	gets
-)
-
 type VM struct {
-	reg [flg + 1]uint32
-	mem [MAX_MEM_SIZE]uint8 //big endian
+	//register file
+	regf [8][4]byte
+	
+	//memory big endian
+	mem [MAX_MEM_SIZE]byte 
+	
+	//program counter
+	pc uint8 
+
+	//status flags
+	flags byte 
+
+	//stack base pointer
+	sbp uint32 
+
+	//return address register
+	rar uint32 
 }
 
 func (vm *VM) LoadFromFile(path string) (error) {
@@ -61,7 +44,7 @@ func (vm *VM) LoadFromFile(path string) (error) {
 	return nil
 }
 
-func (vm *VM) write(loc uint32, sz uint8, data uint32) {
+/*func (vm *VM) write(loc uint32, sz uint8, data uint32) {
 	for i := uint8(0); i < sz; i++ {
 		vm.mem[loc + uint32(i)] = uint8(data >> (8*(sz - 1)))
 	} 
@@ -89,22 +72,30 @@ func (vm *VM) fetch(n uint8) {
 			vm.reg[pc]++
 		}
 	}
-}
+}*/
+
 
 func (vm *VM) Run() {
 	for {
-		if vm.checkFlag(hf) {
+		/*if vm.checkFlag(hf) {
 			break //break if halt flag is set to 1
-		}
+		}*/
 
-		//fetch
-		vm.fetch(1)
-		
+		//fetch instruction
+		instruction := vm.mem[vm.pc]
+		vm.pc++
+
+		//fetch operands
+		operands := vm.mem[vm.pc]
+		vm.pc++
+
 		//decode
-		opc := 63 & (vm.reg[ir] >> 2)
-		mod := uint8(3 & vm.reg[ir])
+		opc := 63 & (instruction >> 2)
+		suff := 3 & instruction
+		dest := operands >> 4 
+		src := 15 & operands
 
 		//execute
-		opLookup[opc](vm, mod)
+		opLookup[opc](vm, suff, dest, src)
 	}
 }

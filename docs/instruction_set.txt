@@ -1,4 +1,7 @@
 ==============  INSTRUCTION FMT ================
+16 bits => 8 bits for INSTRUCTION, 8 bits for OPERANDS HEADER
+
+
 INSTRUCTION
 8 bits => 5 bits for Opcode, 3 bits for instruction suffix
 
@@ -9,9 +12,8 @@ that the value being moved into the destination is 8 bits or 1 byte.
 OPERANDS HEADER
 8 bits => 4 bits for the destination, 4 bits for the source
 
-For instructions with one or two operands, the next byte after the INSTRUCTION
-is the OPERANDS HEADER which describes what destination and source are for a 
-given instruction. Below is the table for the operand types.
+The next byte after the INSTRUCTION is the OPERANDS HEADER which describes what 
+destination and source are for a given instruction. Below is the table for the operand types.
 
 OPERAND TYPE
 0000    <none>      Instruction doesn't use this operand
