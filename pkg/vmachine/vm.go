@@ -60,26 +60,19 @@ func (vm *VM) updateFlags(r uint8) {
 	}
 }
 
-func (vm *VM) checkFlag(flag uint8) bool {
-	return (((1 << flag) & vm.reg[flg]) >> flag) == 1
-}
-
-func (vm *VM) fetch(n uint8) {
-	if n > 0 {
-		for i := uint8(0); i < n; i++ {
-			vm.reg[ir] <<= 8
-			vm.reg[ir] |= uint32(vm.mem[vm.reg[pc]])
-			vm.reg[pc]++
-		}
-	}
 }*/
+
+
+func (vm *VM) getFlag(flag uint8) bool {
+	return (((1 << flag) & vm.flags) >> flag) == 1
+}
 
 
 func (vm *VM) Run() {
 	for {
-		/*if vm.checkFlag(hf) {
-			break //break if halt flag is set to 1
-		}*/
+		if vm.getFlag(F_HALT) {
+			break
+		}
 
 		//fetch instruction
 		instruction := vm.mem[vm.pc]

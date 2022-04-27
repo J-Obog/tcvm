@@ -2,6 +2,10 @@ package vmachine
 
 type opFn func(*VM, byte, byte, byte)
 
+func foobar(vm *VM, suffix byte, destination byte, source byte) {
+
+}
+
 var opLookup = [32]opFn{}
 
 /*package vmachine
