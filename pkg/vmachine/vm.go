@@ -8,13 +8,13 @@ import (
 
 type VM struct {
 	//register file
-	regf [8][4]byte
+	regf [8]uint32
 	
 	//memory big endian
 	mem [MAX_MEM_SIZE]byte 
 	
 	//program counter
-	pc uint8 
+	pc uint32
 
 	//status flags
 	flags byte 
@@ -44,12 +44,7 @@ func (vm *VM) LoadFromFile(path string) (error) {
 	return nil
 }
 
-/*func (vm *VM) write(loc uint32, sz uint8, data uint32) {
-	for i := uint8(0); i < sz; i++ {
-		vm.mem[loc + uint32(i)] = uint8(data >> (8*(sz - 1)))
-	} 
-}
-
+/*
 func (vm *VM) updateFlags(r uint8) {
 	sgn := (vm.reg[r] >> 31)
 	vm.reg[flg] |= (sgn << nf) // set negative flag
@@ -62,6 +57,32 @@ func (vm *VM) updateFlags(r uint8) {
 
 }*/
 
+func (vm *VM) mem_read(addr uint32, rsize uint8) uint32 {
+	ptr := addr
+	end := ptr + uint32(rsize)
+	data := uint32(0)
+	
+	for ptr < end {
+		data <<= 8
+		data |= uint32(vm.mem[ptr])
+		ptr++
+	}
+
+	return data
+}
+
+func (vm *VM) mem_write(addr uint32, wsize uint8, data uint32) {
+	ptr := addr
+	end := ptr + uint32(wsize)
+	sfac := wsize - 1
+
+	for ptr < end {
+		word := (data & (255 << (8 * sfac))) >> (8 * sfac)
+		vm.mem[ptr] = byte(word)
+		ptr++
+		sfac--
+	}
+}
 
 func (vm *VM) getFlag(flag uint8) bool {
 	return (((1 << flag) & vm.flags) >> flag) == 1
@@ -77,7 +98,7 @@ func (vm *VM) Run() {
 		instruction := vm.mem[vm.pc]
 		vm.pc++
 
-		//fetch operands
+		//fetch operand header
 		operands := vm.mem[vm.pc]
 		vm.pc++
 
