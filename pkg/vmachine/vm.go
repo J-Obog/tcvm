@@ -8,16 +8,16 @@ import (
 
 type VM struct {
 	//register file
-	regf [8]uint32
+	regs [8]uint32
 	
 	//memory big endian
-	mem [MAX_MEM_SIZE]byte 
+	mem [MAX_MEM_SIZE]uint8 
 	
 	//program counter
 	pc uint32
 
 	//status flags
-	flags byte 
+	flags uint8 
 
 	//stack base pointer
 	sbp uint32 
@@ -78,11 +78,21 @@ func (vm *VM) mem_write(addr uint32, wsize uint8, data uint32) {
 
 	for ptr < end {
 		word := (data & (255 << (8 * sfac))) >> (8 * sfac)
-		vm.mem[ptr] = byte(word)
+		vm.mem[ptr] = uint8(word)
 		ptr++
 		sfac--
 	}
 }
+
+func (vm *VM) reg_read(reg uint32, rsize uint8) uint32 {
+	return vm.regs[reg] & ((1 << (8 * rsize)) - 1)
+}
+
+func (vm *VM) reg_write(reg uint32, wsize uint8, data uint32) {
+	d := (data & ((1 << (8 * wsize)) - 1))
+	vm.regs[reg] |= d
+}
+
 
 func (vm *VM) getFlag(flag uint8) bool {
 	return (((1 << flag) & vm.flags) >> flag) == 1
