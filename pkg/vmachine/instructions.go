@@ -49,6 +49,42 @@ func (vm *VM) getSrc(stype uint8, size uint8) uint32 {
 	return 0
 }
 
+func (vm *VM) getDSType() (dest *Store, destLoc uint32, src uint32, dataSize uint8) {
+	b := uint8(vm.ram.Read(vm.pc, BYTE))
+	vm.pc++
+	dt := (b >> 2) & 0x3
+	st := b & 0x3
+	sz := (b >> 4) & 0xF
+
+	d, dl := vm.getDest(dt)
+	s := vm.getSrc(st, sz)
+
+	return &d, dl, s, sz
+
+}
+
+func (vm *VM) getDType() (dest *Store, destLoc uint32, dataSize uint8) {
+	b := uint8(vm.ram.Read(vm.pc, BYTE))
+	vm.pc++
+	dt := b & 0x3
+	sz := (b >> 2) & 0xF
+
+	d, dl := vm.getDest(dt)
+
+	return &d, dl, sz
+}
+
+func (vm *VM) getSType() (src uint32, dataSize uint8) {
+	b := uint8(vm.ram.Read(vm.pc, BYTE))
+	vm.pc++
+	st := b & 0x3
+	sz := (b >> 2) & 0xF
+
+	s := vm.getSrc(st, sz)
+
+	return s, sz
+}
+
 type opFn func(*VM, byte, byte, byte)
 
 func nop(vm *VM, suffix byte, destination byte, source byte) {
