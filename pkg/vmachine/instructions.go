@@ -85,6 +85,18 @@ func (vm *VM) getSType() (src uint32, dataSize uint8) {
 	return s, sz
 }
 
+func (vm *VM) getJType() (neg uint8, flag uint8, src uint32) {
+	b := uint8(vm.ram.Read(vm.pc, BYTE))
+	vm.pc++
+	st := b & 0x3
+	flg := (b >> 2) & 0xF
+	ng := (b >> 6) & 0x1
+
+	s := vm.getSrc(st, 0x4)
+
+	return ng, flg, s
+}
+
 type opFn func(*VM, byte, byte, byte)
 
 func nop(vm *VM, suffix byte, destination byte, source byte) {
