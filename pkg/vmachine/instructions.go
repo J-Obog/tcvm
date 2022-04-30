@@ -1,5 +1,54 @@
 package vmachine
 
+func (vm *VM) getDest(dtype uint8) (dest Store, destLoc uint32) {
+	switch dtype {
+	case M_REG:
+		reg := vm.ram.Read(vm.pc, BYTE)
+		vm.pc++
+		return &vm.registers, reg
+
+	case M_EREG:
+		reg := vm.ram.Read(vm.pc, BYTE)
+		vm.pc++
+		addr := vm.registers.Read(reg, DWORD)
+		return &vm.ram, addr
+
+	case M_EMEM:
+		addr := vm.ram.Read(vm.pc, DWORD)
+		vm.pc += 4
+		return &vm.ram, addr
+	}
+
+	return nil, 0
+}
+
+func (vm *VM) getSrc(stype uint8, size uint8) uint32 {
+	switch stype {
+	case M_REG:
+		reg := vm.ram.Read(vm.pc, BYTE)
+		vm.pc++
+		return vm.registers.Read(reg, size)
+
+	case M_EREG:
+		reg := vm.ram.Read(vm.pc, BYTE)
+		vm.pc++
+		addr := vm.registers.Read(reg, DWORD)
+		return vm.ram.Read(addr, size)
+
+	case M_EMEM:
+		addr := vm.ram.Read(vm.pc, DWORD)
+		vm.pc += 4
+		return vm.ram.Read(addr, size)
+
+	case M_IMMED:
+		v := vm.ram.Read(vm.pc, size)
+		vm.pc += uint32(size)
+		return v
+	}
+
+	return 0
+}
+
 type opFn func(*VM, byte, byte, byte)
 
 func nop(vm *VM, suffix byte, destination byte, source byte) {
