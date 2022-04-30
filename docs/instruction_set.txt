@@ -16,11 +16,10 @@ The next byte after the INSTRUCTION is the OPERANDS HEADER which describes what
 destination and source are for a given instruction. Below is the table for the operand types.
 
 OPERAND TYPE
-0000    <none>      Instruction doesn't use this operand
-0001    register    A CPU Register    
-0010    [register]  The effective address of a register
-0011    [memory]    The effective address of a location in memory
-0100    immediate   A numeric literal
+0000    register    A CPU Register    
+0001    [register]  The effective address of a register
+0010    [memory]    The effective address of a location in memory
+0011    immediate   A numeric literal
 
 
 ============== INSTRUCTION SET ================

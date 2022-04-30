@@ -51,3 +51,8 @@ const M_EREG uint8 = 1
 const M_EMEM uint8 = 2
 const M_IMMED uint8 = 3
 const M_MEM uint8 = 4
+
+//data sizes
+const BYTE uint8 = 1
+const WORD uint8 = 2
+const DWORD uint8 = 4
