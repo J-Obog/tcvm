@@ -12,7 +12,7 @@ type VM struct {
 	
 	//memory big endian
 	ram Memory
-	
+
 	//program counter
 	pc uint32
 

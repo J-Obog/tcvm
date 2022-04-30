@@ -1,21 +1,55 @@
 ==============  INSTRUCTION FMT ================
-16 bits => 8 bits for INSTRUCTION, 8 bits for OPERANDS HEADER
+Z TYPE(1 BYTE) => Format for zero operand instructions
+------------------------------------------------------------
+BYTE 1
+[0:7] Opcode
 
 
-INSTRUCTION
-8 bits => 5 bits for Opcode, 3 bits for instruction suffix
+DS TYPE(2 BYTES) => Format for destination-source instructions
+------------------------------------------------------------
+BYTE 1
+[0:7] Opcode
 
-An example of an instruction suffix can be seen in the 'mov8' instruction.
-The opcode would be the 'mov' mnemonic with the suffix being '8' to specify
-that the value being moved into the destination is 8 bits or 1 byte. 
+BYTE 2
+[0:1] Source type
+[2:3] Destination type
+[4:7] Size specifier
 
-OPERANDS HEADER
-8 bits => 4 bits for the destination, 4 bits for the source
 
-The next byte after the INSTRUCTION is the OPERANDS HEADER which describes what 
-destination and source are for a given instruction. Below is the table for the operand types.
+J TYPE(2 BYTES) => Format for jump instructions
+------------------------------------------------------------
+BYTE 1
+[0:7] Opcode
 
-OPERAND TYPE
+BYTE 2
+[0:1] Source type
+[2:5] Tested flag
+[6:6] Is negated
+[7:7] Unused 
+
+D TYPE(2 BYTES) => Format for destination-only type instructions
+------------------------------------------------------------
+BYTE 1
+[0:7] Opcode
+
+BYTE 2
+[0:1] Destination type
+[2:5] Size specifier
+[6:7] Unused 
+
+
+S TYPE(2 BYTES) => Format for source-only type instructions
+------------------------------------------------------------
+BYTE 1
+[0:7] Opcode
+
+BYTE 2
+[0:1] Source type
+[2:5] Size specifier
+[6:7] Unused 
+
+
+DESTINATION/SOURCE TYPES
 0000    register    A CPU Register    
 0001    [register]  The effective address of a register
 0010    [memory]    The effective address of a location in memory
