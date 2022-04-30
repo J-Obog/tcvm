@@ -71,21 +71,11 @@ func (vm *VM) Run() {
 			break
 		}
 
-		/*//fetch instruction
-		instruction := vm.ram.Read(vm.pc, BYTE)
+		//fetch opcode
+		opcode := uint8(vm.ram.Read(vm.pc, BYTE))
 		vm.pc++
-
-		//fetch operand header
-		operands := vm.mem[vm.pc]
-		vm.pc++
-
-		//decode
-		opc := 63 & (instruction >> 2)
-		suff := 3 & instruction
-		dest := operands >> 4 
-		src := 15 & operands
-
+	
 		//execute
-		opLookup[opc](vm, suff, dest, src)*/
+		opLookup[opcode](vm)
 	}
 }
