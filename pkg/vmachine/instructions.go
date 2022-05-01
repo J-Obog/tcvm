@@ -1,5 +1,7 @@
 package vmachine
 
+import "reflect"
+
 func (vm *VM) getDest(dtype uint8) (dest Store, destLoc uint32) {
 	switch dtype {
 	case M_REG:
@@ -101,10 +103,13 @@ type opFn func(vm *VM)
 
 func nop(vm *VM) {
 	//no operation
+
 }
 
 func mov(vm *VM) {
-
+	d, dl, s, sz := vm.getDSType()
+	va := reflect.ValueOf(d).Elem()
+	va.Write()
 }
 
 func add(vm *VM) {

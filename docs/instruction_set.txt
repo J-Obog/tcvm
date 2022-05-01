@@ -5,48 +5,38 @@ BYTE 1
 [0:7] Opcode
 
 
-DS TYPE(2 BYTES) => Format for destination-source instructions
+RS TYPE(2 BYTES) => Register-Source Format
 ------------------------------------------------------------
 BYTE 1
 [0:7] Opcode
 
 BYTE 2
-[0:1] Source type
-[2:3] Destination type
-[4:7] Size specifier
+[0:2] Regiser
+[3:4] Source type
+[5:7] Size specifier
 
 
-J TYPE(2 BYTES) => Format for jump instructions
-------------------------------------------------------------
-BYTE 1
-[0:7] Opcode
-
-BYTE 2
-[0:1] Source type
-[2:5] Tested flag
-[6:6] Is negated
-[7:7] Unused 
-
-D TYPE(2 BYTES) => Format for destination-only type instructions
+M TYPE(2 BYTES) => Move Format
 ------------------------------------------------------------
 BYTE 1
 [0:7] Opcode
 
 BYTE 2
 [0:1] Destination type
-[2:5] Size specifier
-[6:7] Unused 
+[2:3] Source type
+[4:6] Size specifier
+[7:7] Unused 
 
-
-S TYPE(2 BYTES) => Format for source-only type instructions
+J TYPE(2 BYTES) => Jump Format
 ------------------------------------------------------------
 BYTE 1
 [0:7] Opcode
 
 BYTE 2
-[0:1] Source type
-[2:5] Size specifier
-[6:7] Unused 
+[0:2] Flag tested
+[3:4] Source type
+[5:5] Is negated
+[6:7] Unused
 
 
 DESTINATION/SOURCE TYPES
