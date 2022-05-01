@@ -10,7 +10,7 @@ func (vm *VM) getSrc(stype uint8, size uint8) uint32 {
 	case M_EREG:
 		reg := vm.ram[vm.pc]
 		vm.pc++
-		addr := vm.regRead(reg, DWORD)
+		addr := vm.regs[reg]
 		return vm.memRead(addr, size)
 
 	case M_EMEM:
@@ -27,16 +27,37 @@ func (vm *VM) getSrc(stype uint8, size uint8) uint32 {
 	return 0
 }
 
-func (vm *VM) RSType() {
-	//register-source
+func (vm *VM) RSType() (size uint8, source uint8, register uint8) {
+	hdr := vm.ram[vm.pc]
+	vm.pc++
+
+	sz := (hdr >> 5) & 0x7
+	src := (hdr >> 3) & 0x3
+	reg := hdr & 0x7
+
+	return sz, src, reg
 }
 
-func (vm *VM) MType() {
-	//mov
+func (vm *VM) MType() (size uint8, source uint8, destination uint8) {
+	hdr := vm.ram[vm.pc]
+	vm.pc++
+
+	sz := (hdr >> 4) & 0x7
+	src := (hdr >> 2) & 0x3
+	dest := hdr & 0x3
+
+	return sz, src, dest
 }
 
-func (vm *VM) JType() {
-	//jmp
+func (vm *VM) JType() (negation uint8, source uint8, flag uint8) {
+	hdr := vm.ram[vm.pc]
+	vm.pc++
+
+	neg := (hdr >> 5) & 0x1
+	src := (hdr >> 3) & 0x3
+	flg := hdr & 0x7
+
+	return neg, src, flg
 }
 
 type opFn func(vm *VM)
