@@ -3,12 +3,12 @@ package vmachine
 func (vm *VM) getSrc(stype uint8, size uint8) uint32 {
 	switch stype {
 	case M_REG:
-		reg := vm.memRead(vm.pc, BYTE)
+		reg := vm.ram[vm.pc]
 		vm.pc++
 		return vm.regRead(reg, size)
 
 	case M_EREG:
-		reg := vm.memRead(vm.pc, BYTE)
+		reg := vm.ram[vm.pc]
 		vm.pc++
 		addr := vm.regRead(reg, DWORD)
 		return vm.memRead(addr, size)

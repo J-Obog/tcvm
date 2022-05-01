@@ -72,11 +72,11 @@ func (vm *VM) memWrite(addr uint32, wsize uint8, data uint32) {
 	}
 }
 
-func (vm *VM) regRead(reg uint32, rsize uint8) uint32 {
+func (vm *VM) regRead(reg uint8, rsize uint8) uint32 {
 	return vm.regs[reg] & ((1 << (8 * rsize)) - 1)
 }
 
-func (vm *VM) regWrite(reg uint32, wsize uint8, data uint32) {
+func (vm *VM) regWrite(reg uint8, wsize uint8, data uint32) {
 	d := (data & ((1 << (8 * wsize)) - 1))
 	vm.regs[reg] = d
 }
