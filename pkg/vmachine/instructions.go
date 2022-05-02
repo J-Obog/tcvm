@@ -72,39 +72,66 @@ func mov(vm *VM) {
 }
 
 func add(vm *VM) {
+	sz, s, r := vm.RSType()
 
+	vm.regs[r] += vm.getSrc(s, sz)
+	vm.updateFlags(vm.regs[r])
 }
 
 func sub(vm *VM) {
+	sz, s, r := vm.RSType()
 
+	vm.regs[r] += (^vm.getSrc(s, sz))
+	vm.updateFlags(vm.regs[r])
 }
 
 func mul(vm *VM) {
+	sz, s, r := vm.RSType()
 
+	vm.regs[r] *= vm.getSrc(s, sz)
+	vm.updateFlags(vm.regs[r])
 }
 
 func div(vm *VM) {
+	sz, s, r := vm.RSType()
 
+	vm.regs[r] /= vm.getSrc(s, sz)
+	vm.updateFlags(vm.regs[r])
 }
 
 func and(vm *VM) {
+	sz, s, r := vm.RSType()
 
+	vm.regs[r] &= vm.getSrc(s, sz)
+	vm.updateFlags(vm.regs[r])
 }
 
 func or(vm *VM) {
+	sz, s, r := vm.RSType()
 
+	vm.regs[r] |= vm.getSrc(s, sz)
+	vm.updateFlags(vm.regs[r])
 }
 
 func not(vm *VM) {
+	_, _, r := vm.RSType()
 
+	vm.regs[r] = ^vm.regs[r]
+	vm.updateFlags(vm.regs[r])
 }
 
 func xor(vm *VM) {
+	sz, s, r := vm.RSType()
 
+	vm.regs[r] ^= vm.getSrc(s, sz)
+	vm.updateFlags(vm.regs[r])
 }
 
 func cmp(vm *VM) {
+	sz, s, r := vm.RSType()
 
+	tmp := vm.regs[r] + (^vm.getSrc(s, sz))
+	vm.updateFlags(tmp)
 }
 
 func jmp(vm *VM) {
