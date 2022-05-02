@@ -155,11 +155,14 @@ func pop(vm *VM) {
 }
 
 func call(vm *VM) {
+	sz, s, _ := vm.RSType()
 
+	vm.rar = vm.pc + 1
+	vm.pc = vm.getSrc(s, sz)
 }
 
 func ret(vm *VM) {
-
+	vm.pc = vm.rar
 }
 
 func shl(vm *VM) {
