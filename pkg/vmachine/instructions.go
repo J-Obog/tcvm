@@ -1,5 +1,7 @@
 package vmachine
 
+import "fmt"
+
 func (vm *VM) getSrc(stype uint8, size uint8) uint32 {
 	switch stype {
 	case M_REG: // register
@@ -193,7 +195,29 @@ func shr(vm *VM) {
 }
 
 func sys(vm *VM) {
+	syscall := uint8(vm.regs[R_R5])
+	switch syscall {
+	case SYS_HALT:
+		vm.flags |= (1 << F_HALT)
+		fmt.Print("Program exited")
 
+	case SYS_PUTS:
+		ptr := vm.regs[R_R6]
+		for vm.ram[ptr] != 0 {
+			fmt.Print(string(vm.ram[ptr]))
+			ptr++
+		}
+		
+	case SYS_GETS:
+		ptr := vm.regs[R_R6]
+		var buf []byte
+		fmt.Scanln(&buf)
+		for _, c := range buf {
+			vm.ram[ptr] = c
+			ptr++
+		}
+		vm.ram[ptr] = 0
+	}
 }
 
 var opLookup = [32]opFn{
