@@ -166,11 +166,17 @@ func ret(vm *VM) {
 }
 
 func shl(vm *VM) {
+	sz, s, r := vm.RSType()
 
+	vm.regs[r] <<= vm.getSrc(s, sz)
+	vm.updateFlags(vm.regs[r])
 }
 
 func shr(vm *VM) {
+	sz, s, r := vm.RSType()
 
+	vm.regs[r] >>= vm.getSrc(s, sz)
+	vm.updateFlags(vm.regs[r])
 }
 
 func sys(vm *VM) {
