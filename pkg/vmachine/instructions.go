@@ -135,6 +135,19 @@ func cmp(vm *VM) {
 }
 
 func jmp(vm *VM) {
+	n, s, f := vm.JType()
+
+	addr := vm.getSrc(s, DWORD)
+
+	c := vm.getFlag(f)
+
+	if n == 1 {
+		c = !c
+	}
+
+	if c {
+		vm.pc = addr
+	}
 
 }
 
