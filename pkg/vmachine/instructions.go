@@ -139,11 +139,19 @@ func jmp(vm *VM) {
 }
 
 func push(vm *VM) {
+	sz, s, _ := vm.RSType()
 
+	addr := vm.regs[R_SP]
+	data := vm.getSrc(s, sz)
+
+	vm.memWrite(addr, sz, data)
+	vm.regs[R_SP] += uint32(sz)
 }
 
 func pop(vm *VM) {
+	sz, _, _ := vm.RSType()
 
+	vm.regs[R_SP] -= uint32(sz)
 }
 
 func call(vm *VM) {
@@ -168,7 +176,7 @@ func sys(vm *VM) {
 
 var opLookup = [32]opFn{
 	nop,
-	/*mov,
+	mov,
 	add,
 	sub,
 	mul,
@@ -185,5 +193,5 @@ var opLookup = [32]opFn{
 	ret,
 	shl,
 	shr,
-	sys,*/
+	sys,
 }

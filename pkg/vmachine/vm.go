@@ -8,7 +8,7 @@ import (
 
 type VM struct {
 	//register file
-	regs [8]uint32
+	regs [9]uint32
 	
 	//memory big endian
 	ram [MAX_MEM_SIZE]uint8
