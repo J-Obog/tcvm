@@ -89,7 +89,6 @@ type opFn func(vm *VM)
 
 func nop(vm *VM) {
 	//no operation
-
 }
 
 func mov(vm *VM) {
