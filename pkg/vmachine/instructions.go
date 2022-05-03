@@ -2,6 +2,29 @@ package vmachine
 
 import "fmt"
 
+
+func (vm *VM) getDest(dtype uint8) uint32 {
+	switch dtype {
+	case M_REG: // register
+		reg := vm.ram[vm.pc]
+		vm.pc++
+		return uint32(reg)
+
+	case M_EREG: // [register]
+		reg := vm.ram[vm.pc]
+		vm.pc++
+		addr := vm.regs[reg]
+		return addr
+
+	case M_EMEM: // [memory]
+		addr := vm.memRead(vm.pc, DWORD)
+		vm.pc += 4
+		return addr
+	}
+
+	return 0
+}
+
 func (vm *VM) getSrc(stype uint8, size uint8) uint32 {
 	switch stype {
 	case M_REG: // register
@@ -150,7 +173,6 @@ func jmp(vm *VM) {
 	if c {
 		vm.pc = addr
 	}
-
 }
 
 func push(vm *VM) {
