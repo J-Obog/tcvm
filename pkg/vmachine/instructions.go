@@ -114,7 +114,7 @@ func add(vm *VM) {
 func sub(vm *VM) {
 	sz, s, r := vm.RSType()
 
-	vm.regs[r] += (^vm.getSrc(s, sz))
+	vm.regs[r] += ((^vm.getSrc(s, sz)) + 1)
 	vm.updateFlags(vm.regs[r])
 }
 
@@ -163,7 +163,7 @@ func xor(vm *VM) {
 func cmp(vm *VM) {
 	sz, s, r := vm.RSType()
 
-	tmp := vm.regs[r] + (^vm.getSrc(s, sz))
+	tmp := vm.regs[r] + ((^vm.getSrc(s, sz)) + 1)
 	vm.updateFlags(tmp)
 }
 
