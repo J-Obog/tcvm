@@ -93,7 +93,15 @@ func nop(vm *VM) {
 }
 
 func mov(vm *VM) {
+	sz, s, d := vm.MType()
+	loc := vm.getDest(d)
+	val := vm.getSrc(s, sz)
 
+	if d == M_REG {
+		vm.regWrite(uint8(loc), sz, val)
+	} else {
+		vm.memWrite(loc, sz, val)
+	}
 }
 
 func add(vm *VM) {
