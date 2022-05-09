@@ -1,78 +1,47 @@
-==============  INSTRUCTION FMT ================
-Z TYPE(1 BYTE) => Format for zero operand instructions
-------------------------------------------------------------
-BYTE 1
-[0:7] Opcode
+REFERENCE
+---------------------------------------------------
+<alpha> := (A ... Z) | (a ... z) 
+<digit> := (0 ... 9)
+<number> := <digit> {<digit>} 
+<condition> := mp | p | z | s | al | r
+<identifier> := (_ | <alpha>) {(_ | <alpha> | <digit>)}
+<register> := r<number> | sp
+<source> := <register> | <number> | <identifier>
+---------------------------------------------------
 
+DATA TRANSFER INSTRUCTIONS
+---------------------------------------------------
+mov[b | w] <register> <source>
+ld[b | w]  <register> <source>
+st[b | w]  <register> <source>
+---------------------------------------------------
 
-RS TYPE(2 BYTES) => Register-Source Format
-------------------------------------------------------------
-BYTE 1
-[0:7] Opcode
+ARITHMETIC/LOGIC INSTRUCTIONS
+---------------------------------------------------
+add[i] <register> <source>
+sub[i] <register> <source>
+mul[i] <register> <source>
+div[i] <register> <source>
+and[i] <register> <source>
+or[i]  <register> <source>
+xor[i] <register> <source>
+cmp[i] <register> <source>
+shl[i] <register> <source>
+shr[i] <register> <source>
+not[i] <register> <source>
+---------------------------------------------------
 
-BYTE 2
-[0:2] Regiser
-[3:4] Source type
-[5:7] Size specifier
+JUMP INSTRUCTIONS
+---------------------------------------------------
+j[n]<condition> [<source>]
+---------------------------------------------------
 
-
-M TYPE(2 BYTES) => Move Format
-------------------------------------------------------------
-BYTE 1
-[0:7] Opcode
-
-BYTE 2
-[0:1] Destination type
-[2:3] Source type
-[4:6] Size specifier
-[7:7] Unused 
-
-J TYPE(2 BYTES) => Jump Format
-------------------------------------------------------------
-BYTE 1
-[0:7] Opcode
-
-BYTE 2
-[0:2] Flag tested
-[3:4] Source type
-[5:5] Is negated
-[6:7] Unused
-
-
-DESTINATION/SOURCE TYPES
-0000    register    A CPU Register    
-0001    [register]  The effective address of a register
-0010    [memory]    The effective address of a location in memory
-0011    immediate   A numeric literal
-
-
-============== INSTRUCTION SET ================
+NO OPERATION
+---------------------------------------------------
 nop
-mov[size]    destination, source
-add[size]    destination, source
-sub[size]    destination, source
-mul[size]    destination, source
-div[size]    destination, source
-and[size]    destination, source
-or[size]     destination, source
-not[size]    destination
-xor[size]    destination, source
-cmp[size]    destination, source
-jmp[cond]    source
-push[size]   source
-pop[size]       
-call         source
-ret
-shl[size]   destination, source
-shr[size]   destination, source
+---------------------------------------------------
+
+SYSTEM CALL
+---------------------------------------------------
 sys
-
-============== DIRECTIVES ================
-label       identifier
-D[size]     immediate
-
---------------------------------------------------------
-destination = register | [register] | [memory] 
-source = register | [register] | [memory] | memory | immediate
-size = 8 | 16 | 32
-cond = Z | NZ | N | NN | P | NP
+---------------------------------------------------
