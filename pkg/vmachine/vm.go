@@ -118,7 +118,7 @@ func (vm *VM) Run() {
 		
 		//fetch
 		op := vm.ram[vm.pc]  
-		primaryOp := (op >> 5) & 0x3
+		primaryOp := (op >> 5) & 0x7
 		vm.pc++
 		
 		//decode/execute
