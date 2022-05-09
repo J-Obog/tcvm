@@ -1,7 +1,5 @@
 package vmachine
 
-const MAX_MEM_SIZE = (1 << 16)
-
 //opcodes
 const (
 	OP_NOP  uint8 = 0

@@ -5,10 +5,12 @@ import (
 	"os"
 )
 
+const MAX_MEM_SIZE = (1 << 16)
+const REGFILE_SIZE = (1 << 4)
 
 type VM struct {
 	//register file
-	regs [9]uint32
+	regs [REGFILE_SIZE]uint32
 	
 	//memory big endian
 	ram [MAX_MEM_SIZE]uint8
