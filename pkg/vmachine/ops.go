@@ -2,6 +2,20 @@ package vmachine
 
 import "fmt"
 
+const ( //function mapping for alu operations
+	F_ADD uint8 = 0  
+	F_SUB uint8 = 1
+	F_MUL uint8 = 2  
+	F_DIV uint8 = 3
+	F_AND uint8 = 4  
+	F_OR  uint8 = 5
+	F_XOR uint8 = 6  
+	F_NOT uint8 = 7  
+	F_CMP uint8 = 8
+	F_SHL uint8 = 9  
+	F_SHR uint8 = 10
+)
+
 
 func (vm *VM) getDest(dtype uint8) uint32 {
 	switch dtype {
