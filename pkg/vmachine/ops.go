@@ -54,7 +54,57 @@ func (vm *VM) transferOp(dir uint8, imm uint8, size uint8, ind uint8) {
 
 //arithmetic/logic operation
 func (vm *VM) aluOp(fn uint8, imm uint8) {
+	regs := vm.ram[vm.pc]
+	vm.pc++
 
+	r := regs & 0x7
+	v1 := vm.regs[r]
+	var v2 uint32
+
+	if imm == 0 {
+		v2 = vm.regs[(regs>>3)&0x7]
+	} else {
+		v2 = vm.memRead(vm.pc, 0x4)
+		vm.pc += 4
+	}
+
+	switch fn {
+	case F_ADD:
+		v2 = v1 + v2
+
+	case F_SUB, F_CMP:
+		v2 += (v1) + (^v2)
+
+	case F_MUL:
+		v2 = v1 * v2
+
+	case F_DIV:
+		v2 = v1 / v2
+
+	case F_AND:
+		v2 = v1 & v2
+
+	case F_OR:
+		v2 = v1 | v2
+
+	case F_XOR:
+		v2 = v1 ^ v2
+
+	case F_NOT:
+		v2 = ^v1
+
+	case F_SHL:
+		v2 = v1 << v2
+
+	case F_SHR:
+		v2 = v1 >> v2
+	}
+
+	vm.updateFlags(v2)
+
+	if fn != F_CMP {
+		vm.regs[r] = v2
+	}
 }
 
 //jump operation
