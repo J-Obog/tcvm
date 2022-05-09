@@ -19,6 +19,9 @@ type VM struct {
 	//status flags
 	flags uint8 
 
+	//data segment pointer
+	dsp uint32
+
 	//stack base pointer
 	sbp uint32 
 
