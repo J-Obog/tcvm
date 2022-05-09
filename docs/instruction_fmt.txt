@@ -1,0 +1,58 @@
+DATA TRANSFER INSTRUCTION FORMAT
+---------------------------------------------------
+Opcode: [ F | D | I | S | IN ]
+
+FIELD       SIZE(bits)        DESCRIPTION
+F           3                 Format/ Used to specify the instruction format (000) 
+D           1                 Direction/ 0 for reg -> mem, 1 for mem -> reg     
+I           1                 Immediate/ 0 if op2 is a register, 1 if op2 is a 32bit immediate       
+S           2                 Size/ Size of data to be transefered, 00 -> 8bits, 01 -> 16bits, 10 -> 32bits
+IN          1                 Indirection/ 0 -> for register/immediate mode, 1 -> for indirect mode 
+
+Used by: mov, ld, st, movb, ldb, stb, movw, ldw, stw
+---------------------------------------------------
+
+ARITHMETIC/LOGIC INSTRUCTION FORMAT
+---------------------------------------------------
+Opcode: [ F | FN | I ]
+
+FIELD       SIZE(bits)        DESCRIPTION
+F           3                 Format/ Used to specify the instruction format (001) 
+FN          4                 Function/ Specifies the arithmetic/logical function to be executed    
+I           1                 Immediate/ 0 if op2 is a register, 1 if op2 is a 32bit immediate       
+
+Used by: add, sub, mul, div, and, or, xor, cmp, shl, shr, not, addi, subi, muli, divi, andi, ori, xori, cmpi, shli, shri, noti
+---------------------------------------------------
+
+JUMP INSTRUCTION FORMAT
+---------------------------------------------------
+Opcode: [ F | C | I | R ]
+
+FIELD       SIZE(bits)        DESCRIPTION
+F           3                 Format/ Used to specify the instruction format (010) 
+C           4                 Condition/ Specifies the jump condition   
+I           1                 Immediate/ 0 if op2 is a register, 1 if op2 is a 32bit immediate       
+R           1                 Return/ 0 if not jumping to rar, 1 if jumping to rar        
+
+Used by: jmp, jp, jnp, jz, jnz, js, jns, jal, jr
+---------------------------------------------------
+
+NO OPERATION FORMAT
+---------------------------------------------------
+Opcode: [ F ]
+
+FIELD       SIZE(bits)        DESCRIPTION
+F           3                 Format/ Used to specify the instruction format (011) 
+
+Used by: nop
+---------------------------------------------------
+
+SYSTEM CALL FORMAT
+---------------------------------------------------
+Opcode: [ F ]
+
+FIELD       SIZE(bits)        DESCRIPTION
+F           3                 Format/ Used to specify the instruction format (100) 
+
+Used by: sys
+---------------------------------------------------
