@@ -30,9 +30,9 @@ const ( //status flag mapping
 )
 
 const ( //system call mapping
-	S_HALT uint8 = 0
-	S_PUTS uint8 = 1
-	S_GETS uint8 = 2
+	S_HALT uint32 = 0
+	S_PUTS uint32 = 1
+	S_GETS uint32 = 2
 )
 
 const ( //register mapping
