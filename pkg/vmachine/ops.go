@@ -71,31 +71,22 @@ func (vm *VM) aluOp(fn uint8, imm uint8) {
 	switch fn {
 	case F_ADD:
 		v2 = v1 + v2
-
 	case F_SUB, F_CMP:
-		v2 += (v1) + (^v2)
-
+		v2 = v1 + ((^v2) + 1)
 	case F_MUL:
 		v2 = v1 * v2
-
 	case F_DIV:
 		v2 = v1 / v2
-
 	case F_AND:
 		v2 = v1 & v2
-
 	case F_OR:
 		v2 = v1 | v2
-
 	case F_XOR:
 		v2 = v1 ^ v2
-
 	case F_NOT:
-		v2 = ^v1
-
+		v2 = ^v2
 	case F_SHL:
 		v2 = v1 << v2
-
 	case F_SHR:
 		v2 = v1 >> v2
 	}
