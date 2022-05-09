@@ -115,9 +115,10 @@ func (vm *VM) Run() {
 		if vm.getFlag(FLG_HALT) {
 			break
 		}
-
-		//fetch opcode
-		//opcode := vm.ram[vm.pc]
+		
+		//fetch
+		//op := vm.ram[vm.pc]  
+		//primaryOp := (op >> 5) & 0x3
 		//vm.pc++
 	
 		//execute
