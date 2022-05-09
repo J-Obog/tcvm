@@ -117,10 +117,10 @@ func (vm *VM) Run() {
 		}
 
 		//fetch opcode
-		opcode := vm.ram[vm.pc]
-		vm.pc++
+		//opcode := vm.ram[vm.pc]
+		//vm.pc++
 	
 		//execute
-		opLookup[opcode](vm)
+		//opLookup[opcode](vm)
 	}
 }
