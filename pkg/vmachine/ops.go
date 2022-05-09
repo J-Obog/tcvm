@@ -1,5 +1,13 @@
 package vmachine
 
+const (
+	OP_DT  uint8 = 0
+	OP_ALU uint8 = 1
+	OP_JMP uint8 = 2
+	OP_NOP uint8 = 3
+	OP_SYS uint8 = 4
+)
+
 const ( //function mapping for alu operations
 	F_ADD uint8 = 0
 	F_SUB uint8 = 1
@@ -55,6 +63,6 @@ func (vm *VM) jumpOp(cond uint8, imm uint8, ret uint8) {
 }
 
 //system call
-func (vm *VM) sysCall(num uint8) {
+func (vm *VM) sysCall(num uint32) {
 
 }

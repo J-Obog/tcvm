@@ -117,11 +117,35 @@ func (vm *VM) Run() {
 		}
 		
 		//fetch
-		//op := vm.ram[vm.pc]  
-		//primaryOp := (op >> 5) & 0x3
-		//vm.pc++
-	
-		//execute
-		//opLookup[opcode](vm)
+		op := vm.ram[vm.pc]  
+		primaryOp := (op >> 5) & 0x3
+		vm.pc++
+		
+		//decode/execute
+		switch primaryOp {
+		case OP_NOP:
+			//no operation
+
+		case OP_DT:
+			d := (op >> 4) & 0x1
+			i := (op >> 3) & 0x1
+			s := (op >> 1) & 0x3
+			ind := op & 0x1
+			vm.transferOp(d, i, s, ind)
+
+		case OP_ALU:
+			f := (op >> 1) & 0xF
+			i := op & 0x1
+			vm.aluOp(f, i)
+
+		case OP_JMP:
+			c := (op >> 2) & 0x7 
+			i := (op >> 1) & 0x1
+			r := op & 0x1 
+			vm.jumpOp(c, i, r)
+
+		case OP_SYS:
+			vm.sysCall(vm.regs[R2])
+		}
 	}
 }
