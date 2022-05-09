@@ -47,6 +47,17 @@ const ( //register mapping
 	SP uint8 = 8
 )
 
+const ( //jump condition mapping
+	C_UNC   uint8 = 0
+	C_ZERO  uint8 = 1
+	C_NZERO uint8 = 2
+	C_POS   uint8 = 3
+	C_NPOS  uint8 = 4
+	C_SGN   uint8 = 5
+	C_NSGN  uint8 = 6
+	C_LINK  uint8 = 7
+)
+
 //data transfer operation
 func (vm *VM) transferOp(dir uint8, imm uint8, size uint8, ind uint8) {
 
@@ -100,7 +111,47 @@ func (vm *VM) aluOp(fn uint8, imm uint8) {
 
 //jump operation
 func (vm *VM) jumpOp(cond uint8, imm uint8, ret uint8) {
+	if ret == 1 {
+		vm.pc = vm.rar
+		return
+	}
 
+	var addr uint32
+	var ftest bool
+
+	if imm == 0 {
+		r := vm.ram[vm.pc]
+		addr = vm.regs[r&0x7]
+		vm.pc++
+	} else {
+		addr = vm.memRead(vm.pc, 0x4)
+		vm.pc += 4
+	}
+
+	switch cond {
+	case C_UNC, C_LINK:
+		ftest = true
+	case C_ZERO:
+		ftest = vm.getFlag(FLG_ZERO)
+	case C_NZERO:
+		ftest = !vm.getFlag(FLG_ZERO)
+	case C_POS:
+		ftest = vm.getFlag(FLG_POS)
+	case C_NPOS:
+		ftest = !vm.getFlag(FLG_POS)
+	case C_SGN:
+		ftest = vm.getFlag(FLG_NEG)
+	case C_NSGN:
+		ftest = !vm.getFlag(FLG_NEG)
+	}
+
+	if cond == C_LINK {
+		vm.rar = vm.pc
+	}
+
+	if ftest {
+		vm.pc = addr
+	}
 }
 
 //system call
