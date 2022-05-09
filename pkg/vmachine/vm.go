@@ -89,19 +89,19 @@ func (vm *VM) regWrite(reg uint8, wsize uint8, data uint32) {
 
 func (vm *VM) updateFlags(val uint32) {
 	if(val == 0) { // set zero flag
-		vm.flags |= (1 << F_ZERO) 
+		vm.flags |= (1 << FLG_ZERO) 
 	} else {
-		vm.flags |= (0 << F_ZERO) 
+		vm.flags |= (0 << FLG_ZERO) 
 	}
 
 	sgn := val >> 31
 
 	if sgn == 0 { //set sign flags
-		vm.flags |= (1 << F_POS)
-		vm.flags |= (0 << F_NEG)
+		vm.flags |= (1 << FLG_POS)
+		vm.flags |= (0 << FLG_NEG)
 	} else {
-		vm.flags |= (0 << F_POS)
-		vm.flags |= (1 << F_NEG)
+		vm.flags |= (0 << FLG_POS)
+		vm.flags |= (1 << FLG_NEG)
 	}
 }
 
@@ -112,7 +112,7 @@ func (vm *VM) getFlag(flag uint8) bool {
 
 func (vm *VM) Run() {
 	for {
-		if vm.getFlag(F_HALT) {
+		if vm.getFlag(FLG_HALT) {
 			break
 		}
 

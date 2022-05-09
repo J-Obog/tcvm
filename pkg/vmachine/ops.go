@@ -15,10 +15,10 @@ const ( //function mapping for alu operations
 )
 
 const ( //status flag mapping
-	F_HALT uint8 = 0
-	F_ZERO uint8 = 1
-	F_NEG  uint8 = 2
-	F_POS  uint8 = 3
+	FLG_HALT uint8 = 0
+	FLG_ZERO uint8 = 1
+	FLG_NEG  uint8 = 2
+	FLG_POS  uint8 = 3
 )
 
 const ( //system call mapping
