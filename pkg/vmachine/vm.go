@@ -27,6 +27,9 @@ type VM struct {
 	//stack base pointer
 	sbp uint32 
 
+	//code segment pointer
+	csp uint32
+
 	//return address register
 	rar uint32 
 }
