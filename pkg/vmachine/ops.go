@@ -150,6 +150,9 @@ func (vm *VM) jumpOp(cond uint8, imm uint8, ret uint8) {
 	}
 
 	if ftest {
+		if addr < vm.csp || addr >= vm.dsp {
+			panic("Segmentation fault")
+		}
 		vm.pc = addr
 	}
 }
