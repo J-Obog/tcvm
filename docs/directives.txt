@@ -4,7 +4,7 @@ REFERENCE
 <digit> := (0 ... 9)
 <number> := <digit> {<digit>} 
 <identifier> := (_ | <alpha>) {(_ | <alpha> | <digit>)}
-<typespec> := byte | word | dword 
+<datadef> := byte | word | dword | space
 ---------------------------------------------------
 
 
@@ -16,6 +16,5 @@ label <identifier>
 
 DATA DECLARATION
 ---------------------------------------------------
-data [<identifier>] <typespec> <number>
-resv [<identifier>] <number>
+data [<identifier>] <datadef> <number>
 ---------------------------------------------------
