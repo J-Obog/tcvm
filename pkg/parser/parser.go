@@ -43,35 +43,45 @@ func (p *Parser) advance() {
 
 func (p *Parser) parseData() Statement {
 	p.advance()
+	data := &Data{}
 
 	if p.ct == nil {
 		panic("Unexpected EOF")
 	}
 
-	dsz, ok := dataTypes[p.ct.Image]
+	if p.ct.Type == lexer.Identifier {
+		data.VarName = p.ct.Image
+		p.advance()
+		if p.ct == nil {
+			panic("Unexpected EOF")
+		}
+	}
+
+	spec, ok := dataSpecMap[p.ct.Image]
 
 	if !ok {
-		panic("Invalid datatype used in data definition")
-	}
-
-	p.advance()
-	
-	if p.ct == nil {
-		panic("Unexpected EOF")
+		panic("Invalid specifier used in data definition")
+	} else {
+		data.Specifier = spec
+		p.advance()
+		if p.ct == nil {
+			panic("Unexpected EOF")
+		}
 	}
 
 	if p.ct.Type != lexer.Number {
-		panic("Data must be of type num literal")
+		panic("Data value must be of type num literal")
 	}
 
     val, err := strconv.ParseUint(p.ct.Image, 10, 32)
     if err != nil {
         panic(err)
-    }
+    } else {
+		data.Value = uint32(val)
+		p.advance()
+	}
 
-	p.advance()
-
-	return &Data{Size: dsz, Value: uint32(val)}
+	return data 
 }
 
 func (p *Parser) parseLabel() Statement {
