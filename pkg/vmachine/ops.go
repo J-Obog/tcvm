@@ -88,8 +88,8 @@ func (vm *VM) transferOp(dir uint8, imm uint8, size uint8, ind uint8) {
 				if op2 < vm.sbp {
 					panic("Stack underflow")
 				}
-				endAddr := ((op2 + uint32(sz)) - 1)
-				if endAddr >= MAX_MEM_SIZE {
+				eAddr := ((op2 + uint32(sz)) - 1)
+				if (eAddr >= MAX_MEM_SIZE) || (eAddr >= vm.esp) {
 					panic("Stack overflow")
 				}
 			}
