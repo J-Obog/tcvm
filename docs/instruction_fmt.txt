@@ -30,7 +30,7 @@ Opcode: [ F | C | I | R ]
 
 FIELD       SIZE(bits)        DESCRIPTION
 F           3                 Format/ Used to specify the instruction format (010) 
-C           4                 Condition/ Specifies the jump condition   
+C           3                 Condition/ Specifies the jump condition   
 I           1                 Immediate/ 0 if op2 is a register, 1 if op2 is a 32bit immediate       
 R           1                 Return/ 0 if not jumping to rar, 1 if jumping to rar        
 
