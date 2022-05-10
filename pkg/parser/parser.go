@@ -108,29 +108,6 @@ func (p *Parser) getOperand() Operand {
 		return Operand{Size: 4, Mode: Memory, Value: p.ct.Image}
 	}
 
-	if p.ct.Image == "[" {
-		p.advance()
-		
-		if p.ct == nil {
-			panic("Unexpected EOF")
-		}
-
-		r := p.ct.Image
-		_, ok := registers[r]
-		if !ok || r[0] != 'r' { //if register is invalid or trying to dereference a special purpose register
-			panic("Invalid effective address")
-		}
-
-		p.advance()
-
-		if p.ct == nil {
-			panic("Unexpected EOF")
-		}
-
-		if p.ct.Image == "]" {
-			return Operand{Size: 1, Mode: ERegister, Value: r}
-		}
-	}
 
 	panic("Invalid source")
 } 

@@ -22,34 +22,26 @@ func (lbl *Label) TotalSize() uint8 {
 
 type Data struct {
 	Statement
-	Size  uint8
+	Specifier uint8
 	Value uint32
 }
 
 func (dat *Data) TotalSize() uint8 {
-	return dat.Size * 8
+	return 0//dat.Size * 8
 }
 
 func (dat *Data) String() string {
-	return fmt.Sprintf("[DATA %dB %d]", dat.Size, dat.Value)
+	return fmt.Sprintf("[DATA %dB %d]", dat.Specifier, dat.Value)
 }
 
-const ( //operand modes
-	ERegister = iota
-	Register 
-	Memory
-	Immediate
-)
-
 type Operand struct {
-	Size  uint8 //in bytes
-	Mode  uint8
+	Source uint8 //REG | MEM | IMM	
 	Value string
 }
 
 type Instruction struct {
 	Statement
-	Opcode   string
+	Opcode   uint8
 	Operands []Operand
 }
 
@@ -58,9 +50,10 @@ func (op *Instruction) String() string {
 }
 
 func (op *Instruction) TotalSize() uint8 {
-	sum := uint8(0)
+	return 0
+	/*sum := uint8(0)
 	for _, opr := range op.Operands {
 		sum += opr.Size
 	}
-	return sum * 8
+	return sum * 8*/
 }
