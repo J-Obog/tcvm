@@ -8,5 +8,4 @@ type Token struct {
 const ( //token type mapping
 	Identifier = iota
 	Number
-	SpecialChar
 )

@@ -78,10 +78,5 @@ func (l *Lexer) NextToken() *Token {
 		return l.lexIdent()
 	}
 
-	if c == '[' || c == ']' {
-		l.advance()
-		return &Token{Type: SpecialChar, Image: string(c)}
-	}
-
 	panic("Unrecognized token")
 }
