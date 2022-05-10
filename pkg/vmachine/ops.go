@@ -60,7 +60,30 @@ const ( //jump condition mapping
 
 //data transfer operation
 func (vm *VM) transferOp(dir uint8, imm uint8, size uint8, ind uint8) {
+	regs := vm.ram[vm.pc]
+	vm.pc++
 
+	r := regs & 0x7
+	var op2 uint32
+	szMap := [3]uint8{1, 2, 4}
+	sz := szMap[size]
+
+	if imm == 0 {
+		op2 = vm.regs[(regs>>3)&0x7]
+	} else {
+		op2 = vm.memRead(vm.pc, 0x4)
+		vm.pc += 4
+	}
+
+	if ind == 0 {
+		vm.regWrite(r, sz, op2)
+	} else {
+		if dir == 0 {
+			vm.memWrite(op2, sz, vm.regs[r])
+		} else {
+			vm.regs[r] = vm.memRead(op2, sz)
+		}
+	}
 }
 
 //arithmetic/logic operation
