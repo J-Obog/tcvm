@@ -30,6 +30,9 @@ type VM struct {
 	//code segment pointer
 	csp uint32
 
+	//extra segment pointer
+	esp uint32
+
 	//return address register
 	rar uint32 
 }
