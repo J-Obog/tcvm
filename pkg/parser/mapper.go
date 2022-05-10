@@ -12,6 +12,14 @@ var registers = map[string]uint8{
 	"sp": 0x8,
 }
 
+const ( //op type mapping
+	DTransfer uint8 = 0
+	Alu       uint8 = 1
+	Jump      uint8 = 2
+	Nop       uint8 = 3
+	SysCall   uint8 = 4
+)
+
 const ( //operand source type mapping
 	Register  uint8 = 0
 	Memory    uint8 = 1

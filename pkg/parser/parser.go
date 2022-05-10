@@ -83,7 +83,6 @@ func (p *Parser) parseLabel() Statement {
 
 	lbl := p.ct.Image
 	p.advance()
-
 	return &Label{Name: lbl}
 }
 
@@ -95,63 +94,48 @@ func (p *Parser) getOperand() Operand {
 	}
 	
 	if p.ct.Type == lexer.Number {
-		return Operand{Size: 4, Mode: Immediate, Value: p.ct.Image} 
+		return Operand{Source: Immediate, Value: p.ct.Image} 
 	}
 
 	if p.ct.Type == lexer.Identifier {
 		_, ok := registers[p.ct.Image]
 
 		if ok {
-			return Operand{Size: 1, Mode: Register, Value: p.ct.Image}
+			return Operand{Source: Register, Value: p.ct.Image}
 		}
 
-		return Operand{Size: 4, Mode: Memory, Value: p.ct.Image}
+		return Operand{Source: Memory, Value: p.ct.Image}
 	}
 
-
-	panic("Invalid source")
+	panic("Invalid operand type")
 } 
 
-func (p *Parser) parseInstruction() Statement {
-	opc := p.ct.Image
-	a := opcodes[opc].Arity 
+func (p *Parser) parseInstruction(opcode uint8) Statement {
+	primaryOp := (opcode >> 5) & 0x7
 
-	if a == 0 { // zero operand instruction
+	switch primaryOp {
+	case Nop, SysCall:
 		p.advance()
-		return &Instruction{Opcode: opc}	
-	} else if a == 1 {// one operand instruction
-		s := p.getOperand() //source
-		if (opc == "not" && (s.Mode != Register)) || (s.Mode == ERegister) {
-			panic("Invalid combination of opcode and operands")
-		}	
-		if opc == "push8" {
-			s.Size = 1
-		}
-		if opc == "push16" {
-			s.Size = 2
-		}
-		p.advance()
-		return &Instruction{Opcode: opc, Operands: []Operand{s}}
-	} else { // two operand instruction
-		d := p.getOperand() //destination
-		s := p.getOperand() //source
+		return &Instruction{Opcode: opcode}
 
-		if ((d.Mode == ERegister) && (opc[:3] != "mov")) || 
-			(s.Mode == ERegister) ||
-			(d.Mode > Register) {
-				
+	case DTransfer, Alu:
+		op1 := p.getOperand()
+		op2 := p.getOperand()
+
+		if op1.Source != Register {
 			panic("Invalid combination of opcode and operands")
 		}
 
-		if opc == "mov8" {
-			s.Size = 1
-		}
-		if opc == "mov16" {
-			s.Size = 2
-		}
-		
 		p.advance()
-		return &Instruction{Opcode: opc, Operands: []Operand{d, s}}
+		return &Instruction{Opcode: opcode, Operands: []Operand{op1, op2}}
+
+	case Jump:
+		op := p.getOperand()
+		p.advance()
+		return &Instruction{Opcode: opcode, Operands: []Operand{op}}
+
+	default:
+		panic("Invalid opcode encoding") 
 	}
 } 
 
@@ -171,9 +155,9 @@ func (p *Parser) NextStatement() Statement {
 			return p.parseData()
 		}
 
-		_, ok := opcodes[txt] 
+		opc, ok := opcodeMap[txt]
 		if ok {
-			return p.parseInstruction()
+			return p.parseInstruction(opc)
 		}
 	}
 
