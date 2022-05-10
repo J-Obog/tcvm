@@ -11,9 +11,9 @@ REFERENCE
 
 DATA TRANSFER INSTRUCTIONS
 ---------------------------------------------------
-mov[b | w] <register> <source>
-ld[b | w]  <register> <source>
-st[b | w]  <register> <source>
+mov[b | w][i] <register> <source>
+ld[b | w][i]  <register> <source>
+st[b | w][i]  <register> <source>
 ---------------------------------------------------
 
 ARITHMETIC/LOGIC INSTRUCTIONS
@@ -33,7 +33,7 @@ not[i] <register> <source>
 
 JUMP INSTRUCTIONS
 ---------------------------------------------------
-j[n]<condition> [<source>]
+j[n]<condition>[i] [<source>]
 ---------------------------------------------------
 
 NO OPERATION
