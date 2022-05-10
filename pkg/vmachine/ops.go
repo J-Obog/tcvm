@@ -78,7 +78,18 @@ func (vm *VM) transferOp(dir uint8, imm uint8, size uint8, ind uint8) {
 	if ind == 0 {
 		vm.regWrite(r, sz, op2)
 	} else {
+		if op2 < vm.dsp {
+			panic("Segmentation fault")
+		}
+
 		if dir == 0 {
+			r2 := (regs >> 3) & 0x7
+			if (imm == 0) && (r2 == SP) {
+				if op2 < vm.sbp {
+					panic("Stack underflow")
+				}
+			}
+
 			vm.memWrite(op2, sz, vm.regs[r])
 		} else {
 			vm.regs[r] = vm.memRead(op2, sz)
@@ -173,7 +184,7 @@ func (vm *VM) jumpOp(cond uint8, imm uint8, ret uint8) {
 	}
 
 	if ftest {
-		if addr < vm.csp || addr >= vm.dsp {
+		if (addr < vm.csp) || (addr >= vm.dsp) {
 			panic("Segmentation fault")
 		}
 		vm.pc = addr
