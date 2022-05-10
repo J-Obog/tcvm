@@ -4,7 +4,7 @@ import "fmt"
 
 type Statement interface {
 	String() string
-	TotalSize() uint8 //in bytes
+	TotalSize() uint32 //in bytes
 }
 
 type Label struct {
@@ -27,8 +27,19 @@ type Data struct {
 	VarName string
 }
 
-func (dat *Data) TotalSize() uint8 {
-	return 0//dat.Size * 8
+func (dat *Data) TotalSize() uint32 {
+	switch dat.Specifier {
+	case Byte:
+		return 1
+	case Word:
+		return 2
+	case DWord:
+		return 4
+	case Space:
+		return dat.Value
+	default:
+		return 0xFFFFFFFF
+	}
 }
 
 func (dat *Data) String() string {
@@ -47,14 +58,35 @@ type Instruction struct {
 }
 
 func (op *Instruction) String() string {
-	return fmt.Sprintf("[INSTRUCTION %s %v]", op.Opcode, op.Operands)
+	return fmt.Sprintf("[INSTRUCTION %d %v]", op.Opcode, op.Operands)
 }
 
-func (op *Instruction) TotalSize() uint8 {
-	return 0
-	/*sum := uint8(0)
-	for _, opr := range op.Operands {
-		sum += opr.Size
+func (op *Instruction) TotalSize() uint32 {
+	arity := len(op.Operands)
+	
+	switch arity {
+	case 0:
+		return 1
+
+	case 1:
+		opr := op.Operands[0]
+		if opr.Source == Register {
+			return 2
+		} else {
+			return 5
+		}
+
+	case 2:
+		opr1 := op.Operands[0]
+		opr2 := op.Operands[1]
+
+		if opr1.Source == Register && opr2.Source == Register {
+			return 2
+		} else {
+			return 7
+		}
+
+	default:
+		return 0xFFFFFFFF
 	}
-	return sum * 8*/
 }
