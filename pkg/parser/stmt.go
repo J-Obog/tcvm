@@ -9,6 +9,7 @@ type Statement interface {
 
 type Label struct {
 	Statement
+	Segment uint8 
 	Name string
 }
 
