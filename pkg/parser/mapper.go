@@ -12,11 +12,6 @@ var registers = map[string]uint8{
 	"sp": 0x8,
 }
 
-const ( //segment mapping
-	TextSeg uint8 = 0
-	DataSeg uint8 = 1
-)
-
 const ( //operand source type mapping
 	Register  uint8 = 0
 	Memory    uint8 = 1

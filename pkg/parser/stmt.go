@@ -9,7 +9,6 @@ type Statement interface {
 
 type Label struct {
 	Statement
-	Segment uint8 
 	Name string
 }
 
@@ -25,6 +24,7 @@ type Data struct {
 	Statement
 	Specifier uint8
 	Value uint32
+	VarName string
 }
 
 func (dat *Data) TotalSize() uint8 {
