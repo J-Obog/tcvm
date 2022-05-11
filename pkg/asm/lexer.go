@@ -33,7 +33,7 @@ func IsDigit(b byte) bool {
 	return b >= '0' && b <= '9'
 }
 
-func New(input []byte) *Lexer {
+func NewLexer(input []byte) *Lexer {
 	var sb byte
 
 	if len(input) > 0 {
@@ -69,6 +69,26 @@ func (l *Lexer) lexIdent() *Token {
 	for IsAlpha(l.cb) || IsDigit(l.cb) || l.cb == '_' {
 		buf += string(l.cb)
 		l.advance()
+	}
+
+	if buf == "label" {
+		return &Token{Type: TKN_LABEL, Image: buf}
+	}
+
+	if buf == "data" {
+		return &Token{Type: TKN_DATA, Image: buf}
+	}
+
+	if _, ok := REGISTER_TBL[buf]; ok {
+		return &Token{Type: TKN_REGISTER, Image: buf}
+	}
+
+	if _, ok := INSTRUCTION_TBL[buf]; ok {
+		return &Token{Type: TKN_INSTRUCTION, Image: buf}
+	}
+
+	if _, ok := ALLOCTYPE_TBL[buf]; ok {
+		return &Token{Type: TKN_ALLOCTYPE, Image: buf}
 	}
 
 	return &Token{Type: TKN_IDENTIFIER, Image: buf}
