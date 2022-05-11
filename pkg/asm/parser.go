@@ -42,7 +42,7 @@ func (p *Parser) parseData() Statement {
 		panic("Unexpected EOF")
 	}
 
-	if p.ct.Type == TKN_IDENTIFIER {
+	if p.ct.Type == TKN_IDENTIFIER { //optional data label
 		data.LabelId = p.ct.Image
 		p.advance()
 		if p.ct == nil {
@@ -50,7 +50,7 @@ func (p *Parser) parseData() Statement {
 		}
 	}
 
-	if p.ct.Type != TKN_ALLOCTYPE {
+	if p.ct.Type != TKN_ALLOCTYPE { //alloctype must follow data directive or data label
 		panic("Invalid specifier used in data definition")
 	} else {
 		data.AllocType = ALLOCTYPE_TBL[p.ct.Image]
@@ -60,7 +60,7 @@ func (p *Parser) parseData() Statement {
 		}
 	}
 
-	if p.ct.Type != TKN_NUMBER {
+	if p.ct.Type != TKN_NUMBER { //num literal must follow alloctype
 		panic("Data value must be of type num literal")
 	} else {
 		data.Literal = p.ct.Image
@@ -77,7 +77,7 @@ func (p *Parser) parseLabel() Statement {
 		panic("Unexpected EOF")
 	}
 
-	if p.ct.Type != TKN_IDENTIFIER {
+	if p.ct.Type != TKN_IDENTIFIER { //label name must be a valid identifier
 		panic("Error parsing label")
 	}
 
@@ -91,10 +91,10 @@ func (p *Parser) isOperandType(oprType uint8) bool {
 }
 
 func (p *Parser) parseInstruction() Statement {
-	op := &Instruction{Opcode: INSTRUCTION_TBL[p.ct.Image], Operands: []Operand{}}
+	op := &Instruction{Opcode: INSTRUCTION_TBL[p.ct.Image]}
 	p.advance()
 
-	for p.ct != nil && p.isOperandType(p.ct.Type) {
+	for p.ct != nil && p.isOperandType(p.ct.Type) { //consume all possible operands
 		opr := Operand{OperandType: p.ct.Type, Literal: p.ct.Image}
 		op.Operands = append(op.Operands, opr)
 		p.advance()
