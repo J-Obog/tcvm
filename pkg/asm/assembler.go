@@ -1,29 +1,25 @@
-package assembler
-
-import (
-	"github.com/J-Obog/tcvm/pkg/parser"
-)
+package asm
 
 type Assembler struct {
 	size    uint32
 	symtab  map[string]uint32
-	program []parser.Statement
+	program []Statement
 }
 
-func New(p *parser.Parser) *Assembler {
+func NewAssembler(p *Parser) *Assembler {
 	a := &Assembler{}
 	stmt := p.NextStatement()
 	loc := uint32(0)
 
 	for stmt != nil {
 		switch stmt := stmt.(type) {
-		case *parser.Label:
+		case *Label:
 			if _, ok := a.symtab[stmt.Name]; ok { //checking if label has been declared already
 				panic("Redefinition of symbol")
 			}
 			a.symtab[stmt.Name] = loc
 
-		case *parser.Data, *parser.Instruction:
+		case *Data, *Instruction:
 			a.program = append(a.program, stmt)
 		}
 
@@ -40,5 +36,5 @@ func (a *Assembler) encodeHeader() []byte {
 }
 
 func (a *Assembler) Assemble(out string) {
-	
+
 }

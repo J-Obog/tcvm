@@ -1,10 +1,25 @@
-package lexer
+package asm
 
 type Lexer struct {
 	input []byte
 	cb    byte //current byte
 	pos   int  //lex position
 }
+
+type Token struct {
+	Type  uint8
+	Image string
+}
+
+const ( //token type mapping
+	TKN_IDENTIFIER  uint8 = 0
+	TKN_NUMBER      uint8 = 1
+	TKN_REGISTER    uint8 = 2
+	TKN_INSTRUCTION uint8 = 3
+	TKN_LABEL       uint8 = 4
+	TKN_ALLOCTYPE   uint8 = 5
+	TKN_DATA        uint8 = 6
+)
 
 func IsAlpha(b byte) bool {
 	return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z')
@@ -45,7 +60,7 @@ func (l *Lexer) lexNum() *Token {
 		l.advance()
 	}
 
-	return &Token{Type: Number, Image: buf}
+	return &Token{Type: TKN_NUMBER, Image: buf}
 }
 
 func (l *Lexer) lexIdent() *Token {
@@ -56,7 +71,7 @@ func (l *Lexer) lexIdent() *Token {
 		l.advance()
 	}
 
-	return &Token{Type: Identifier, Image: buf}
+	return &Token{Type: TKN_IDENTIFIER, Image: buf}
 }
 
 func (l *Lexer) NextToken() *Token {

@@ -1,4 +1,4 @@
-package parser
+package asm
 
 var registers = map[string]uint8{
 	"r0": 0x0,

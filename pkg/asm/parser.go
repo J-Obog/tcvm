@@ -1,20 +1,16 @@
-package parser
+package asm
 
-import (
-	"strconv"
-
-	"github.com/J-Obog/tcvm/pkg/lexer"
-)
+import "strconv"
 
 type Parser struct {
-	tokens []*lexer.Token //list of tokens
-	ct *lexer.Token //current token
-	pos int //parser position
+	tokens []*Token //list of tokens
+	ct     *Token   //current token
+	pos    int      //parser position
 }
 
-func New(lex *lexer.Lexer) *Parser {
+func NewParser(lex *Lexer) *Parser {
 	tkn := lex.NextToken()
-	var st *lexer.Token
+	var st *Token
 	p := &Parser{}
 
 	for tkn != nil {
@@ -40,7 +36,6 @@ func (p *Parser) advance() {
 	}
 }
 
-
 func (p *Parser) parseData() Statement {
 	p.advance()
 	data := &Data{}
@@ -49,7 +44,7 @@ func (p *Parser) parseData() Statement {
 		panic("Unexpected EOF")
 	}
 
-	if p.ct.Type == lexer.Identifier {
+	if p.ct.Type == TKN_IDENTIFIER {
 		data.VarName = p.ct.Image
 		p.advance()
 		if p.ct == nil {
@@ -69,25 +64,25 @@ func (p *Parser) parseData() Statement {
 		}
 	}
 
-	if p.ct.Type != lexer.Number {
+	if p.ct.Type != TKN_NUMBER {
 		panic("Data value must be of type num literal")
 	}
 
-    val, err := strconv.ParseUint(p.ct.Image, 10, 32)
-    if err != nil {
-        panic(err)
-    } else {
+	val, err := strconv.ParseUint(p.ct.Image, 10, 32)
+	if err != nil {
+		panic(err)
+	} else {
 		data.Value = uint32(val)
 		p.advance()
 	}
 
-	return data 
+	return data
 }
 
 func (p *Parser) parseLabel() Statement {
 	p.advance()
 
-	if p.ct == nil || p.ct.Type != lexer.Identifier {
+	if p.ct == nil || p.ct.Type != TKN_IDENTIFIER {
 		panic("Error parsing label")
 	}
 
@@ -102,12 +97,12 @@ func (p *Parser) getOperand() Operand {
 	if p.ct == nil {
 		panic("Unexpected EOF")
 	}
-	
-	if p.ct.Type == lexer.Number {
-		return Operand{Source: Immediate, Value: p.ct.Image} 
+
+	if p.ct.Type == TKN_NUMBER {
+		return Operand{Source: Immediate, Value: p.ct.Image}
 	}
 
-	if p.ct.Type == lexer.Identifier {
+	if p.ct.Type == TKN_IDENTIFIER {
 		_, ok := registers[p.ct.Image]
 
 		if ok {
@@ -118,7 +113,7 @@ func (p *Parser) getOperand() Operand {
 	}
 
 	panic("Invalid operand type")
-} 
+}
 
 func (p *Parser) parseInstruction(opcode uint8) Statement {
 	primaryOp := (opcode >> 5) & 0x7
@@ -145,16 +140,16 @@ func (p *Parser) parseInstruction(opcode uint8) Statement {
 		return &Instruction{Opcode: opcode, Operands: []Operand{op}}
 
 	default:
-		panic("Invalid opcode encoding") 
+		panic("Invalid opcode encoding")
 	}
-} 
+}
 
 func (p *Parser) NextStatement() Statement {
 	if p.ct == nil {
 		return nil
 	}
 
-	if p.ct.Type == lexer.Identifier {
+	if p.ct.Type == TKN_IDENTIFIER {
 		txt := p.ct.Image
 
 		if txt == "label" {
