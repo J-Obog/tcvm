@@ -52,7 +52,7 @@ func (p *Parser) parseData() Statement {
 		}
 	}
 
-	spec, ok := dataSpecMap[p.ct.Image]
+	spec, ok := ALLOCTYPE_TBL[p.ct.Image]
 
 	if !ok {
 		panic("Invalid specifier used in data definition")
@@ -160,7 +160,7 @@ func (p *Parser) NextStatement() Statement {
 			return p.parseData()
 		}
 
-		opc, ok := opcodeMap[txt]
+		opc, ok := INSTRUCTION_TBL[txt]
 		if ok {
 			return p.parseInstruction(opc)
 		}

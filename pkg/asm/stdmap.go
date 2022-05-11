@@ -1,17 +1,5 @@
 package asm
 
-var registers = map[string]uint8{
-	"r0": 0x0,
-	"r1": 0x1,
-	"r2": 0x2,
-	"r3": 0x3,
-	"r4": 0x4,
-	"r5": 0x5,
-	"r6": 0x6,
-	"r7": 0x7,
-	"sp": 0x8,
-}
-
 const ( //op type mapping
 	DTransfer uint8 = 0
 	Alu       uint8 = 1
@@ -27,20 +15,32 @@ const ( //operand source type mapping
 )
 
 const ( //data def specifier
-	Byte  uint8 = 0
-	Word  uint8 = 1
-	DWord uint8 = 2
-	Space uint8 = 3
+	ALLOC_BYTE  uint8 = 0
+	ALLOC_WORD  uint8 = 1
+	ALLOC_DWORD uint8 = 2
+	ALLOC_SPACE uint8 = 3
 )
 
-var dataSpecMap = map[string]uint8{
-	"byte":  Byte,
-	"word":  Word,
-	"dword": DWord,
-	"space": Space,
+var REGISTER_TBL = map[string]uint8{
+	"r0": 0x0,
+	"r1": 0x1,
+	"r2": 0x2,
+	"r3": 0x3,
+	"r4": 0x4,
+	"r5": 0x5,
+	"r6": 0x6,
+	"r7": 0x7,
+	"sp": 0x8,
 }
 
-var opcodeMap = map[string]uint8{
+var ALLOCTYPE_TBL = map[string]uint8{
+	"byte":  ALLOC_BYTE,
+	"word":  ALLOC_WORD,
+	"dword": ALLOC_DWORD,
+	"space": ALLOC_SPACE,
+}
+
+var INSTRUCTION_TBL = map[string]uint8{
 	"mov":   0x4,
 	"movb":  0x0,
 	"movw":  0x2,
