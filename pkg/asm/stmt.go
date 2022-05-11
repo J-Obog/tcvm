@@ -4,7 +4,6 @@ import "fmt"
 
 type Statement interface {
 	String() string
-	TotalSize() uint32 //in bytes
 }
 
 type Label struct {
@@ -16,39 +15,20 @@ func (lbl *Label) String() string {
 	return fmt.Sprintf("[LABEL %s]", lbl.Name)
 }
 
-func (lbl *Label) TotalSize() uint32 {
-	return 0
-}
-
 type Data struct {
 	Statement
-	Specifier uint8
-	Value uint32
-	VarName string
-}
-
-func (dat *Data) TotalSize() uint32 {
-	switch dat.Specifier {
-	case Byte:
-		return 1
-	case Word:
-		return 2
-	case DWord:
-		return 4
-	case Space:
-		return dat.Value
-	default:
-		return 0xFFFFFFFF
-	}
+	AllocType uint8
+	Literal string
+	LabelId string
 }
 
 func (dat *Data) String() string {
-	return fmt.Sprintf("[DATA %dB %d]", dat.Specifier, dat.Value)
+	return fmt.Sprintf("[DATA %s %d %s]", dat.LabelId, dat.AllocType, dat.Literal)
 }
 
 type Operand struct {
-	Source uint8 //REG | MEM | IMM	
-	Value string
+	OperandType uint8
+	Literal string
 }
 
 type Instruction struct {
@@ -59,34 +39,4 @@ type Instruction struct {
 
 func (op *Instruction) String() string {
 	return fmt.Sprintf("[INSTRUCTION %d %v]", op.Opcode, op.Operands)
-}
-
-func (op *Instruction) TotalSize() uint32 {
-	arity := len(op.Operands)
-	
-	switch arity {
-	case 0:
-		return 1
-
-	case 1:
-		opr := op.Operands[0]
-		if opr.Source == Register {
-			return 2
-		} else {
-			return 5
-		}
-
-	case 2:
-		opr1 := op.Operands[0]
-		opr2 := op.Operands[1]
-
-		if opr1.Source == Register && opr2.Source == Register {
-			return 2
-		} else {
-			return 7
-		}
-
-	default:
-		return 0xFFFFFFFF
-	}
 }

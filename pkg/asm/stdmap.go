@@ -9,9 +9,9 @@ const ( //op type mapping
 )
 
 const ( //operand source type mapping
-	Register  uint8 = 0
-	Memory    uint8 = 1
-	Immediate uint8 = 2
+	OPR_REGISTER  uint8 = 0
+	OPR_MEMORY    uint8 = 1
+	OPR_IMMEDIATE uint8 = 2
 )
 
 const ( //data def specifier

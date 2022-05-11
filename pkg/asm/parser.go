@@ -1,7 +1,5 @@
 package asm
 
-import "strconv"
-
 type Parser struct {
 	tokens []*Token //list of tokens
 	ct     *Token   //current token
@@ -37,111 +35,15 @@ func (p *Parser) advance() {
 }
 
 func (p *Parser) parseData() Statement {
-	p.advance()
-	data := &Data{}
 
-	if p.ct == nil {
-		panic("Unexpected EOF")
-	}
-
-	if p.ct.Type == TKN_IDENTIFIER {
-		data.VarName = p.ct.Image
-		p.advance()
-		if p.ct == nil {
-			panic("Unexpected EOF")
-		}
-	}
-
-	spec, ok := ALLOCTYPE_TBL[p.ct.Image]
-
-	if !ok {
-		panic("Invalid specifier used in data definition")
-	} else {
-		data.Specifier = spec
-		p.advance()
-		if p.ct == nil {
-			panic("Unexpected EOF")
-		}
-	}
-
-	if p.ct.Type != TKN_NUMBER {
-		panic("Data value must be of type num literal")
-	}
-
-	val, err := strconv.ParseUint(p.ct.Image, 10, 32)
-	if err != nil {
-		panic(err)
-	} else {
-		data.Value = uint32(val)
-		p.advance()
-	}
-
-	return data
 }
 
 func (p *Parser) parseLabel() Statement {
-	p.advance()
 
-	if p.ct == nil || p.ct.Type != TKN_IDENTIFIER {
-		panic("Error parsing label")
-	}
-
-	lbl := p.ct.Image
-	p.advance()
-	return &Label{Name: lbl}
 }
 
-func (p *Parser) getOperand() Operand {
-	p.advance()
+func (p *Parser) parseInstruction() Statement {
 
-	if p.ct == nil {
-		panic("Unexpected EOF")
-	}
-
-	if p.ct.Type == TKN_NUMBER {
-		return Operand{Source: Immediate, Value: p.ct.Image}
-	}
-
-	if p.ct.Type == TKN_IDENTIFIER {
-		_, ok := registers[p.ct.Image]
-
-		if ok {
-			return Operand{Source: Register, Value: p.ct.Image}
-		}
-
-		return Operand{Source: Memory, Value: p.ct.Image}
-	}
-
-	panic("Invalid operand type")
-}
-
-func (p *Parser) parseInstruction(opcode uint8) Statement {
-	primaryOp := (opcode >> 5) & 0x7
-
-	switch primaryOp {
-	case Nop, SysCall:
-		p.advance()
-		return &Instruction{Opcode: opcode}
-
-	case DTransfer, Alu:
-		op1 := p.getOperand()
-		op2 := p.getOperand()
-
-		if op1.Source != Register {
-			panic("Invalid combination of opcode and operands")
-		}
-
-		p.advance()
-		return &Instruction{Opcode: opcode, Operands: []Operand{op1, op2}}
-
-	case Jump:
-		op := p.getOperand()
-		p.advance()
-		return &Instruction{Opcode: opcode, Operands: []Operand{op}}
-
-	default:
-		panic("Invalid opcode encoding")
-	}
 }
 
 func (p *Parser) NextStatement() Statement {
@@ -149,21 +51,15 @@ func (p *Parser) NextStatement() Statement {
 		return nil
 	}
 
-	if p.ct.Type == TKN_IDENTIFIER {
-		txt := p.ct.Image
+	switch p.ct.Type {
+	case TKN_LABEL:
+		return nil
 
-		if txt == "label" {
-			return p.parseLabel()
-		}
+	case TKN_DATA:
+		return nil
 
-		if txt == "data" {
-			return p.parseData()
-		}
-
-		opc, ok := INSTRUCTION_TBL[txt]
-		if ok {
-			return p.parseInstruction(opc)
-		}
+	case TKN_INSTRUCTION:
+		return nil
 	}
 
 	panic("Invalid statement")
