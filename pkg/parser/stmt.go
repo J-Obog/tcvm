@@ -16,7 +16,7 @@ func (lbl *Label) String() string {
 	return fmt.Sprintf("[LABEL %s]", lbl.Name)
 }
 
-func (lbl *Label) TotalSize() uint8 {
+func (lbl *Label) TotalSize() uint32 {
 	return 0
 }
 
