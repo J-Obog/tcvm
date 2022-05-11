@@ -1,0 +1,91 @@
+SYSTEM CALLS
+---------------------------------
+System provided services.
+
+Uses register r3 for code lookup/return
+
+Uses registers r4 - r7 for arguments/return
+
+
+
+SYS_EXIT(0)
+---------------------------------
+Description: 
+Terminates program execution with specified exit code
+
+Args:
+r4 = exit code
+
+Result:
+---------------------------------
+
+
+SYS_READ(1)
+---------------------------------
+Description: 
+Reads data from a file
+
+Args:
+r4 = file descriptor
+r5 = pointer to buffer 
+r6 = number of character to read
+
+Result:
+r3 = number of characters read or error code
+---------------------------------
+
+
+SYS_WRITE(2)
+---------------------------------
+Description: 
+Writes data to a file
+
+Args:
+r4 = file descriptor
+r5 = pointer to buffer 
+r6 = number of character to write
+
+Result:
+r3 = number of characters written or error code
+---------------------------------
+
+
+SYS_OPEN(3)
+---------------------------------
+Description: 
+Opens a file
+
+Args:
+r4 = pointer to filepath
+r5 = file flags
+
+Result:
+r3 = file descriptor or error code
+---------------------------------
+
+
+SYS_CLOSE(4)
+---------------------------------
+Description: 
+Closes a file
+
+Args:
+r4 = file descriptor
+
+Result:
+r3 = zero or error code
+---------------------------------
+
+
+SYS_SBRK(4)
+---------------------------------
+Description: 
+Increments program break
+
+Args:
+r4 = increment
+
+Result:
+r3 = address of break
+---------------------------------
+
