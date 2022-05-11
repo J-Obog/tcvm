@@ -60,31 +60,31 @@ const ( //jump condition mapping
 
 //data transfer operation
 func (vm *VM) transferOp(dir uint8, imm uint8, size uint8, ind uint8) {
-	regs := vm.ram[vm.pc]
-	vm.pc++
-
-	r := regs & 0x7
+	reg1 := vm.ram[vm.pc]
+	var reg2 uint8
 	var op2 uint32
 	szMap := [3]uint8{1, 2, 4}
 	sz := szMap[size]
+	vm.pc++
 
 	if imm == 0 {
-		op2 = vm.regs[(regs>>3)&0x7]
+		reg2 = vm.ram[vm.pc]
+		op2 = vm.regs[reg2]
+		vm.pc++
 	} else {
 		op2 = vm.memRead(vm.pc, 0x4)
 		vm.pc += 4
 	}
 
 	if ind == 0 {
-		vm.regWrite(r, sz, op2)
+		vm.regWrite(reg1, sz, op2)
 	} else {
 		if op2 < vm.dsp {
 			panic("Segmentation fault")
 		}
 
 		if dir == 0 {
-			r2 := (regs >> 3) & 0x7
-			if (imm == 0) && (r2 == SP) {
+			if (imm == 0) && (reg2 == SP) {
 				if op2 < vm.sbp {
 					panic("Stack underflow")
 				}
@@ -94,56 +94,57 @@ func (vm *VM) transferOp(dir uint8, imm uint8, size uint8, ind uint8) {
 				}
 			}
 
-			vm.memWrite(op2, sz, vm.regs[r])
+			vm.memWrite(op2, sz, vm.regs[reg1])
 		} else {
-			vm.regs[r] = vm.memRead(op2, sz)
+			vm.regs[reg1] = vm.memRead(op2, sz)
 		}
 	}
 }
 
 //arithmetic/logic operation
 func (vm *VM) aluOp(fn uint8, imm uint8) {
-	regs := vm.ram[vm.pc]
+	dreg := vm.ram[vm.pc] //destination register
+	dval := vm.regs[dreg] //value in destination
+	var sval uint32       //value in source
+	var tmp uint32
 	vm.pc++
 
-	r := regs & 0x7
-	v1 := vm.regs[r]
-	var v2 uint32
-
 	if imm == 0 {
-		v2 = vm.regs[(regs>>3)&0x7]
-	} else {
-		v2 = vm.memRead(vm.pc, 0x4)
+		sval = vm.memRead(vm.pc, 0x4)
 		vm.pc += 4
+	} else {
+		sreg := vm.ram[vm.pc]
+		sval = vm.regs[sreg]
+		vm.pc++
 	}
 
 	switch fn {
 	case F_ADD:
-		v2 = v1 + v2
+		tmp = dval + sval
 	case F_SUB, F_CMP:
-		v2 = v1 + ((^v2) + 1)
+		tmp = dval + ((^sval) + 1)
 	case F_MUL:
-		v2 = v1 * v2
+		tmp = dval * sval
 	case F_DIV:
-		v2 = v1 / v2
+		tmp = dval / sval
 	case F_AND:
-		v2 = v1 & v2
+		tmp = dval & sval
 	case F_OR:
-		v2 = v1 | v2
+		tmp = dval | sval
 	case F_XOR:
-		v2 = v1 ^ v2
+		tmp = dval ^ sval
 	case F_NOT:
-		v2 = ^v2
+		tmp = ^sval
 	case F_SHL:
-		v2 = v1 << v2
+		tmp = dval << sval
 	case F_SHR:
-		v2 = v1 >> v2
+		tmp = dval >> sval
 	}
 
-	vm.updateFlags(v2)
+	vm.updateFlags(tmp)
 
 	if fn != F_CMP {
-		vm.regs[r] = v2
+		vm.regs[dreg] = tmp
 	}
 }
 
@@ -158,8 +159,8 @@ func (vm *VM) jumpOp(cond uint8, imm uint8, ret uint8) {
 	var ftest bool
 
 	if imm == 0 {
-		r := vm.ram[vm.pc]
-		addr = vm.regs[r&0x7]
+		reg := vm.ram[vm.pc]
+		addr = vm.regs[reg]
 		vm.pc++
 	} else {
 		addr = vm.memRead(vm.pc, 0x4)
