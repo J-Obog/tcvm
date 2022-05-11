@@ -35,15 +35,72 @@ func (p *Parser) advance() {
 }
 
 func (p *Parser) parseData() Statement {
+	p.advance()
+	data := &Data{}
 
+	if p.ct == nil {
+		panic("Unexpected EOF")
+	}
+
+	if p.ct.Type == TKN_IDENTIFIER {
+		data.LabelId = p.ct.Image
+		p.advance()
+		if p.ct == nil {
+			panic("Unexpected EOF")
+		}
+	}
+
+	if p.ct.Type != TKN_ALLOCTYPE {
+		panic("Invalid specifier used in data definition")
+	} else {
+		data.AllocType = ALLOCTYPE_TBL[p.ct.Image]
+		p.advance()
+		if p.ct == nil {
+			panic("Unexpected EOF")
+		}
+	}
+
+	if p.ct.Type != TKN_NUMBER {
+		panic("Data value must be of type num literal")
+	} else {
+		data.Literal = p.ct.Image
+		p.advance()
+	}
+
+	return data
 }
 
 func (p *Parser) parseLabel() Statement {
+	p.advance()
 
+	if p.ct == nil {
+		panic("Unexpected EOF")
+	}
+
+	if p.ct.Type != TKN_IDENTIFIER {
+		panic("Error parsing label")
+	}
+
+	nm := p.ct.Image
+	p.advance()
+	return &Label{Name: nm}
+}
+
+func (p *Parser) isOperandType(oprType uint8) bool {
+	return oprType == (TKN_IDENTIFIER) || (oprType == TKN_REGISTER) || (oprType == TKN_NUMBER)
 }
 
 func (p *Parser) parseInstruction() Statement {
+	op := &Instruction{Opcode: INSTRUCTION_TBL[p.ct.Image], Operands: []Operand{}}
+	p.advance()
 
+	for p.ct != nil && p.isOperandType(p.ct.Type) {
+		opr := Operand{OperandType: p.ct.Type, Literal: p.ct.Image}
+		op.Operands = append(op.Operands, opr)
+		p.advance()
+	}
+
+	return op
 }
 
 func (p *Parser) NextStatement() Statement {
@@ -53,13 +110,13 @@ func (p *Parser) NextStatement() Statement {
 
 	switch p.ct.Type {
 	case TKN_LABEL:
-		return nil
+		return p.parseLabel()
 
 	case TKN_DATA:
-		return nil
+		return p.parseData()
 
 	case TKN_INSTRUCTION:
-		return nil
+		return p.parseInstruction()
 	}
 
 	panic("Invalid statement")

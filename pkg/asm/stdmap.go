@@ -1,19 +1,5 @@
 package asm
 
-const ( //op type mapping
-	DTransfer uint8 = 0
-	Alu       uint8 = 1
-	Jump      uint8 = 2
-	Nop       uint8 = 3
-	SysCall   uint8 = 4
-)
-
-const ( //operand source type mapping
-	OPR_REGISTER  uint8 = 0
-	OPR_MEMORY    uint8 = 1
-	OPR_IMMEDIATE uint8 = 2
-)
-
 const ( //data def specifier
 	ALLOC_BYTE  uint8 = 0
 	ALLOC_WORD  uint8 = 1
