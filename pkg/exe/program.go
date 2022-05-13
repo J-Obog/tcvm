@@ -14,10 +14,11 @@ type Symbol struct {
 type Header struct {
 	EntryPoint   uint32
 	StartAddress uint32
-	SymTabStart  uint32
+	StrTabLen    uint32
+	SymTabLen    uint32
 	RelTabStart  uint32
-	DataSegStart uint32
-	CodeSegStart uint32
+	DataSegLen   uint32
+	CodeSegLen   uint32
 }
 
 type Program struct {
