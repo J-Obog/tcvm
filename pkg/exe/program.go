@@ -16,7 +16,7 @@ type Header struct {
 	StartAddress uint32
 	StrTabLen    uint32
 	SymTabLen    uint32
-	RelTabStart  uint32
+	RelTabLen    uint32
 	DataSegLen   uint32
 	CodeSegLen   uint32
 }
@@ -28,4 +28,12 @@ type Program struct {
 	StrTab  []string
 	SymTab  map[string]*Symbol
 	RelTab  []*Target
+}
+
+func (p *Program) Encode() {
+
+}
+
+func (p *Program) Decode() {
+
 }
