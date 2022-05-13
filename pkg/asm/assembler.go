@@ -1,12 +1,10 @@
 package asm
 
+import "github.com/J-Obog/tcvm/pkg/exe"
+
 type Assembler struct {
-	symtab     map[string]uint32
-	codeSeg    []byte
-	dataSeg    []byte
-	dataRelocs []string
-	codeRelocs map[string]uint32
-	program    []Statement
+	exe.Program
+	code []Statement
 }
 
 func NewAssembler(p *Parser) *Assembler {
@@ -14,17 +12,9 @@ func NewAssembler(p *Parser) *Assembler {
 	stmt := p.NextStatement()
 
 	for stmt != nil {
-		a.program = append(a.program, stmt)
+		a.code = append(a.code, stmt)
 		stmt = p.NextStatement()
 	}
 
 	return a
-}
-
-func (a *Assembler) encodeHeader() []byte {
-	return nil
-}
-
-func (a *Assembler) Assemble(out string) {
-
 }
