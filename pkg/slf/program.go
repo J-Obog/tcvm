@@ -2,16 +2,16 @@ package slf
 
 //SLF = Simple Link Format
 
-type Target struct {
-	Offset      uint32
-	StrTabIndex uint32
-}
-
 type Symbol struct {
 	Offset   uint32
 	StrTabIndex uint32
 	Flags uint8 //[EXTERN | DATA] 
 }
+
+const ( //symbol flag mapping
+	S_ISEXTERN = 0x1 
+	S_ISDATA = 0x2
+)
 
 type Header struct {
 	EntryPoint   uint32
@@ -29,7 +29,7 @@ type Program struct {
 	DataSeg []byte
 	StrTab  []string
 	SymTab  map[string]*Symbol
-	RelTab  []*Target
+	RelTab  []uint32
 }
 
 
