@@ -12,7 +12,7 @@ func ReadU32(buf *bytes.Buffer) uint32 {
 
 func WriteU32(buf *bytes.Buffer, val uint32) {
 	b := make([]byte, 4)
-	binary.LittleEndian.PutUint32(b, val)
+	binary.BigEndian.PutUint32(b, val)
 	buf.Write(b)
 }
 

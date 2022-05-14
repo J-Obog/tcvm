@@ -2,6 +2,7 @@ package asm
 
 import (
 	"bytes"
+	"encoding/binary"
 	"os"
 
 	"github.com/J-Obog/tcvm/pkg/slf"
@@ -39,6 +40,7 @@ func (l *Linker) LinkFiles(out string) {
 
 	for i := 1; i < len(l.programs); i++ {
 		l.link(base, l.programs[i])
+		l.applyRelocs(base)
 	}
 
 	buf := base.Encode()
@@ -95,7 +97,7 @@ func (l *Linker) link(prog1 *slf.Program, prog2 *slf.Program) {
 			t.StrTabIndex = prog1.SymTab[lbl].StrTabIndex
 			t.Offset += prog1.CodeSegSize
 		} 
-		
+
 		prog1.RelTab = append(prog1.RelTab, prog2.RelTab...)
 
 		
@@ -105,6 +107,35 @@ func (l *Linker) link(prog1 *slf.Program, prog2 *slf.Program) {
 		prog1.CodeSeg = append(prog1.CodeSeg, prog2.CodeSeg...)
 		prog1.DataSeg = append(prog1.DataSeg, prog2.DataSeg...)
 	}
+}
 
+
+func (l *Linker) applyRelocs(prog *slf.Program) {
+	//transform offsets into absolute addresses
+	for l,s := range prog.SymTab {
+		if checkFlag(s.Flags, slf.S_ISEXTERN) {
+			panic("Unresolved symbol")
+		}
+
+		s.Offset += prog.EntryPoint
+
+		if checkFlag(s.Flags, slf.S_ISDATA) {
+			s.Offset += prog.CodeSegSize
+		}
+		
+		if l == "__start__" {
+			prog.StartAddress = s.Offset
+		}
+	}
+
+	//actually applying the relocations
+	for _, t := range prog.RelTab {
+		codeOff := t.Offset
+		lbl := prog.StrTab[t.StrTabIndex]
+		addr := prog.SymTab[lbl].Offset
+		binVal := make([]byte, 4)
+		binary.BigEndian.PutUint32(binVal, addr)
+		copy(prog.CodeSeg[codeOff : codeOff + 4], binVal)
+	}
 }
 
