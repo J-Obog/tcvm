@@ -1,4 +1,4 @@
-package vmachine
+package vm
 
 import (
 	"errors"
@@ -10,10 +10,9 @@ import (
 const MAX_MEM_SIZE = (1 << 16)
 const REGFILE_SIZE = (1 << 4)
 const ( //status flag mapping
-	FLG_HALT uint8 = 0
-	FLG_ZERO uint8 = 1
-	FLG_NEG  uint8 = 2
-	FLG_POS  uint8 = 3
+	FLG_ZERO uint8 = 0
+	FLG_NEG  uint8 = 1
+	FLG_POS  uint8 = 2
 )
 
 type VirtualMachine struct {
@@ -126,10 +125,6 @@ func (m *VirtualMachine) getFlag(flag uint8) bool {
 
 func (m *VirtualMachine) Run() {
 	for {
-		if m.getFlag(FLG_HALT) {
-			break
-		}
-		
 		//fetch
 		op := m.ram[m.pc]  
 		primaryOp := (op >> 5) & 0x7

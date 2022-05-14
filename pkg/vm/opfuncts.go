@@ -1,4 +1,4 @@
-package vmachine
+package vm
 
 import "github.com/J-Obog/tcvm/pkg/com"
 
@@ -14,12 +14,6 @@ const ( //function mapping for alu operations
 	F_CMP uint8 = 8
 	F_SHL uint8 = 9
 	F_SHR uint8 = 10
-)
-
-const ( //system call mapping
-	S_HALT uint32 = 0
-	S_PUTS uint32 = 1
-	S_GETS uint32 = 2
 )
 
 const ( //jump condition mapping
