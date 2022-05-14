@@ -45,8 +45,7 @@ func (p *Program) encodeSymTab(buf *bytes.Buffer) {
 
 func (p *Program) encodeRelTab(buf *bytes.Buffer) {
 	for _, t := range p.RelTab {
-		WriteU32(buf, t.Offset)
-		WriteU32(buf, t.StrTabIndex)
+		WriteU32(buf, t)
 	}
 }
 
