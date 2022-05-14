@@ -23,5 +23,18 @@ func (c *Cpu) sysCall(num uint32) {
 	case SYS_EXIT:
 		exitCode := c.Registers[com.R1]
 		os.Exit(int(exitCode))
+	
+	
+	case SYS_SBRK:
+		incr := c.Registers[com.R1]
+		oldBrk := c.ESP
+		newBrk := c.ESP - incr
+
+		if (newBrk <= c.SBP) || (newBrk <= c.Registers[com.SP]) {
+			c.Registers[com.R0] = 0xFFFFFFFF
+		} else {
+			c.ESP = newBrk
+			c.Registers[com.R0] = oldBrk
+		}	
 	}
 }
