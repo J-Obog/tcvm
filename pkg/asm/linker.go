@@ -11,7 +11,7 @@ type Linker struct {
 	programs []*slf.Program
 }
 
-func NewLinker(inputs []string, out string) *Linker {
+func NewLinker(inputs []string) *Linker {
 	l := &Linker{}
 
 	for _, input := range inputs {
@@ -30,3 +30,22 @@ func NewLinker(inputs []string, out string) *Linker {
 	return l
 } 
 
+
+func (l *Linker) Link(out string) {
+	if len(l.programs) == 0 {
+		panic("Not enough input files to link")
+	}
+
+	base := l.programs[0]
+
+	for i := 1; i < len(l.programs); i++ {
+		//link magic
+	}
+
+	buf := base.Encode()
+	err := os.WriteFile(out, buf.Bytes(), 0777)
+
+	if err != nil {
+		panic(err)
+	}
+}

@@ -2,7 +2,8 @@ package slf
 
 import "bytes"
 
-func (p *Program) Encode(buf *bytes.Buffer) *bytes.Buffer {
+func (p *Program) Encode() *bytes.Buffer {
+	buf := bytes.NewBuffer([]byte{})
 	p.encodeHeader(buf)
 	p.encodeStrTab(buf)
 	p.encodeSymTab(buf)
