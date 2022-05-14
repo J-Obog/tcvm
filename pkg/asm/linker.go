@@ -30,8 +30,11 @@ func NewLinker(inputs []string) *Linker {
 	return l
 } 
 
+func (l *Linker) Link(prog1 *slf.Program, prog2 *slf.Program) {
+	//link two files
+}
 
-func (l *Linker) Link(out string) {
+func (l *Linker) LinkFiles(out string) {
 	if len(l.programs) == 0 {
 		panic("Not enough input files to link")
 	}
@@ -39,7 +42,7 @@ func (l *Linker) Link(out string) {
 	base := l.programs[0]
 
 	for i := 1; i < len(l.programs); i++ {
-		//link magic
+		l.Link(base, l.programs[i])
 	}
 
 	buf := base.Encode()
@@ -49,3 +52,5 @@ func (l *Linker) Link(out string) {
 		panic(err)
 	}
 }
+
+
