@@ -1,63 +1,31 @@
 package asm
 
 import (
-	"bytes"
 	"encoding/binary"
-	"os"
 
 	"github.com/J-Obog/tcvm/pkg/slf"
 )
 
-type Linker struct {
-	programs []*slf.Program
-}
-
-func NewLinker(inputs []string) *Linker {
-	l := &Linker{}
-
-	for _, input := range inputs {
-		content, err := os.ReadFile(input)
-
-		if err != nil {
-			panic(err)
-		}
-
-		pgm := &slf.Program{}
-		buf := bytes.NewBuffer(content)
-		pgm.Decode(buf)
-		l.programs = append(l.programs, pgm)
+func LinkPrograms(progs []*slf.Program) *slf.Program {
+	if len(progs) == 0 {
+		panic("Not enough inputs to link")
 	}
 
-	return l
-} 
+	base := progs[0]
 
-func (l *Linker) LinkFiles(out string) {
-	if len(l.programs) == 0 {
-		panic("Not enough input files to link")
+	for i := 1; i < len(progs); i++ {
+		link(base, progs[i])
+		applyRelocs(base)
 	}
 
-	base := l.programs[0]
-
-	for i := 1; i < len(l.programs); i++ {
-		l.link(base, l.programs[i])
-		l.applyRelocs(base)
-	}
-
-	buf := base.Encode()
-	err := os.WriteFile(out, buf.Bytes(), 0777)
-
-	if err != nil {
-		panic(err)
-	}
+	return base
 }
 
 func checkFlag(flags uint8, flag uint8) bool {
 	return ((flags >> (flag - 1)) & 0x1) == 1
 }
 
-func (l *Linker) link(prog1 *slf.Program, prog2 *slf.Program) {
-	//link two files
-
+func link(prog1 *slf.Program, prog2 *slf.Program) {
 	//merging symbol tables 
 	for l, s2 := range prog2.SymTab {
 		s1 := prog1.SymTab[l]
@@ -110,7 +78,7 @@ func (l *Linker) link(prog1 *slf.Program, prog2 *slf.Program) {
 }
 
 
-func (l *Linker) applyRelocs(prog *slf.Program) {
+func applyRelocs(prog *slf.Program) {
 	//transform offsets into absolute addresses
 	for l,s := range prog.SymTab {
 		if checkFlag(s.Flags, slf.S_ISEXTERN) {
