@@ -1,9 +1,9 @@
 package asm
 
-import "github.com/J-Obog/tcvm/pkg/exe"
+import "github.com/J-Obog/tcvm/pkg/slf"
 
 type Assembler struct {
-	exe.Program
+	slf.Program
 	code []Statement
 }
 
