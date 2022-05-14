@@ -2,9 +2,9 @@ SYSTEM CALLS
 ---------------------------------
 System provided services.
 
-Uses register r3 for code lookup/return
+Uses register r0 for code lookup/return
 
-Uses registers r4 - r7 for arguments/return
+Uses registers r1 to r14 for arguments
 
 
 
@@ -14,7 +14,7 @@ Description:
 Terminates program execution with specified exit code
 
 Args:
-r4 = exit code
+r1 = exit code
 
 Result:
 ---------------------------------
@@ -26,12 +26,12 @@ Description:
 Reads data from a file
 
 Args:
-r4 = file descriptor
-r5 = pointer to buffer 
-r6 = number of character to read
+r1 = file descriptor
+r2 = pointer to buffer 
+r3 = number of character to read
 
 Result:
-r3 = number of characters read or error code
+r0 = number of characters read or error code
 ---------------------------------
 
 
@@ -41,12 +41,12 @@ Description:
 Writes data to a file
 
 Args:
-r4 = file descriptor
-r5 = pointer to buffer 
-r6 = number of character to write
+r1 = file descriptor
+r2 = pointer to buffer 
+r3 = number of character to write
 
 Result:
-r3 = number of characters written or error code
+r0 = number of characters written or error code
 ---------------------------------
 
 
@@ -56,11 +56,11 @@ Description:
 Opens a file
 
 Args:
-r4 = pointer to filepath
-r5 = file flags
+r1 = pointer to filepath
+r2 = file flags
 
 Result:
-r3 = file descriptor or error code
+r0 = file descriptor or error code
 ---------------------------------
 
 
@@ -70,10 +70,10 @@ Description:
 Closes a file
 
 Args:
-r4 = file descriptor
+r1 = file descriptor
 
 Result:
-r3 = zero or error code
+r0 = zero or error code
 ---------------------------------
 
 
@@ -83,9 +83,8 @@ Description:
 Increments program break
 
 Args:
-r4 = increment
+r1 = increment
 
 Result:
-r3 = address of break
+r0 = address of break
 ---------------------------------
-

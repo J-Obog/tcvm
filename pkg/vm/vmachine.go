@@ -16,7 +16,7 @@ const ( //status flag mapping
 	FLG_POS  uint8 = 3
 )
 
-type VM struct {
+type VirtualMachine struct {
 	//register file
 	regs [REGFILE_SIZE]uint32
 	
@@ -45,7 +45,7 @@ type VM struct {
 	rar uint32 
 }
 
-func (vm *VM) LoadFromFile(path string) (error) {
+func (m *VirtualMachine) LoadFromFile(path string) (error) {
 	content, err := os.ReadFile(path) 
 
 	if err != nil { 
@@ -57,83 +57,83 @@ func (vm *VM) LoadFromFile(path string) (error) {
 	}
 
 	for i, b := range content {
-		vm.ram[i] = b
+		m.ram[i] = b
 	}
 
 	return nil
 }
 
 
-func (vm *VM) memRead(addr uint32, rsize uint8) uint32 {
+func (m *VirtualMachine) memRead(addr uint32, rsize uint8) uint32 {
 	ptr := addr
 	end := ptr + uint32(rsize)
 	data := uint32(0)
 
 	for ptr < end {
 		data <<= 8
-		data |= uint32(vm.ram[ptr])
+		data |= uint32(m.ram[ptr])
 		ptr++
 	}
 
 	return data
 }
 
-func (vm *VM) memWrite(addr uint32, wsize uint8, data uint32) {
+func (m *VirtualMachine) memWrite(addr uint32, wsize uint8, data uint32) {
 	ptr := addr
 	end := ptr + uint32(wsize)
 	sfac := wsize - 1
 
 	for ptr < end {
 		word := (data & (255 << (8 * sfac))) >> (8 * sfac)
-		vm.ram[ptr] = uint8(word)
+		m.ram[ptr] = uint8(word)
 		ptr++
 		sfac--
 	}
 }
 
-func (vm *VM) regRead(reg uint8, rsize uint8) uint32 {
-	return vm.regs[reg] & ((1 << (8 * rsize)) - 1)
+func (m *VirtualMachine) regRead(reg uint8, rsize uint8) uint32 {
+	return m.regs[reg] & ((1 << (8 * rsize)) - 1)
 }
 
-func (vm *VM) regWrite(reg uint8, wsize uint8, data uint32) {
+func (m *VirtualMachine) regWrite(reg uint8, wsize uint8, data uint32) {
 	d := (data & ((1 << (8 * wsize)) - 1))
-	vm.regs[reg] = d
+	m.regs[reg] = d
 }
 
 
-func (vm *VM) updateFlags(val uint32) {
+func (m *VirtualMachine) updateFlags(val uint32) {
 	if(val == 0) { // set zero flag
-		vm.flags |= (1 << FLG_ZERO) 
+		m.flags |= (1 << FLG_ZERO) 
 	} else {
-		vm.flags |= (0 << FLG_ZERO) 
+		m.flags |= (0 << FLG_ZERO) 
 	}
 
 	sgn := val >> 31
 
 	if sgn == 0 { //set sign flags
-		vm.flags |= (1 << FLG_POS)
-		vm.flags |= (0 << FLG_NEG)
+		m.flags |= (1 << FLG_POS)
+		m.flags |= (0 << FLG_NEG)
 	} else {
-		vm.flags |= (0 << FLG_POS)
-		vm.flags |= (1 << FLG_NEG)
+		m.flags |= (0 << FLG_POS)
+		m.flags |= (1 << FLG_NEG)
 	}
 }
 
-func (vm *VM) getFlag(flag uint8) bool {
-	return (((1 << flag) & vm.flags) >> flag) == 1
+func (m *VirtualMachine) getFlag(flag uint8) bool {
+	return (((1 << flag) & m.flags) >> flag) == 1
 }
 
 
-func (vm *VM) Run() {
+func (m *VirtualMachine) Run() {
 	for {
-		if vm.getFlag(FLG_HALT) {
+		if m.getFlag(FLG_HALT) {
 			break
 		}
 		
 		//fetch
-		op := vm.ram[vm.pc]  
+		op := m.ram[m.pc]  
 		primaryOp := (op >> 5) & 0x7
-		vm.pc++
+		m.pc++
 		
 		//decode/execute
 		switch primaryOp {
@@ -145,21 +145,21 @@ func (vm *VM) Run() {
 			i := (op >> 3) & 0x1
 			s := (op >> 1) & 0x3
 			ind := op & 0x1
-			vm.transferOp(d, i, s, ind)
+			m.transferOp(d, i, s, ind)
 
 		case com.ARITHMETIC_LOGIC_OP:
 			f := (op >> 1) & 0xF
 			i := op & 0x1
-			vm.aluOp(f, i)
+			m.aluOp(f, i)
 
 		case com.JUMP_OP:
 			c := (op >> 2) & 0x7 
 			i := (op >> 1) & 0x1
 			r := op & 0x1 
-			vm.jumpOp(c, i, r)
+			m.jumpOp(c, i, r)
 
 		case com.SYSCALL_OP:
-			vm.sysCall(vm.regs[com.R0])
+			m.sysCall(m.regs[com.R0])
 		}
 	}
 }

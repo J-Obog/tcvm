@@ -34,63 +34,63 @@ const ( //jump condition mapping
 )
 
 //data transfer operation
-func (vm *VM) transferOp(dir uint8, imm uint8, size uint8, ind uint8) {
-	reg1 := vm.ram[vm.pc]
+func (m *VirtualMachine) transferOp(dir uint8, imm uint8, size uint8, ind uint8) {
+	reg1 := m.ram[m.pc]
 	var reg2 uint8
 	var op2 uint32
 	szMap := [3]uint8{1, 2, 4}
 	sz := szMap[size]
-	vm.pc++
+	m.pc++
 
 	if imm == 0 {
-		reg2 = vm.ram[vm.pc]
-		op2 = vm.regs[reg2]
-		vm.pc++
+		reg2 = m.ram[m.pc]
+		op2 = m.regs[reg2]
+		m.pc++
 	} else {
-		op2 = vm.memRead(vm.pc, 0x4)
-		vm.pc += 4
+		op2 = m.memRead(m.pc, 0x4)
+		m.pc += 4
 	}
 
 	if ind == 0 {
-		vm.regWrite(reg1, sz, op2)
+		m.regWrite(reg1, sz, op2)
 	} else {
-		if op2 < vm.dsp {
+		if op2 < m.dsp {
 			panic("Segmentation fault")
 		}
 
 		if dir == 0 {
 			if (imm == 0) && (reg2 == com.SP) {
-				if op2 < vm.sbp {
+				if op2 < m.sbp {
 					panic("Stack underflow")
 				}
 				eAddr := ((op2 + uint32(sz)) - 1)
-				if (eAddr >= MAX_MEM_SIZE) || (eAddr >= vm.esp) {
+				if (eAddr >= MAX_MEM_SIZE) || (eAddr >= m.esp) {
 					panic("Stack overflow")
 				}
 			}
 
-			vm.memWrite(op2, sz, vm.regs[reg1])
+			m.memWrite(op2, sz, m.regs[reg1])
 		} else {
-			vm.regs[reg1] = vm.memRead(op2, sz)
+			m.regs[reg1] = m.memRead(op2, sz)
 		}
 	}
 }
 
 //arithmetic/logic operation
-func (vm *VM) aluOp(fn uint8, imm uint8) {
-	dreg := vm.ram[vm.pc] //destination register
-	dval := vm.regs[dreg] //value in destination
+func (m *VirtualMachine) aluOp(fn uint8, imm uint8) {
+	dreg := m.ram[m.pc] //destination register
+	dval := m.regs[dreg] //value in destination
 	var sval uint32       //value in source
 	var tmp uint32
-	vm.pc++
+	m.pc++
 
 	if imm == 0 {
-		sval = vm.memRead(vm.pc, 0x4)
-		vm.pc += 4
+		sval = m.memRead(m.pc, 0x4)
+		m.pc += 4
 	} else {
-		sreg := vm.ram[vm.pc]
-		sval = vm.regs[sreg]
-		vm.pc++
+		sreg := m.ram[m.pc]
+		sval = m.regs[sreg]
+		m.pc++
 	}
 
 	switch fn {
@@ -116,17 +116,17 @@ func (vm *VM) aluOp(fn uint8, imm uint8) {
 		tmp = dval >> sval
 	}
 
-	vm.updateFlags(tmp)
+	m.updateFlags(tmp)
 
 	if fn != F_CMP {
-		vm.regs[dreg] = tmp
+		m.regs[dreg] = tmp
 	}
 }
 
 //jump operation
-func (vm *VM) jumpOp(cond uint8, imm uint8, ret uint8) {
+func (m *VirtualMachine) jumpOp(cond uint8, imm uint8, ret uint8) {
 	if ret == 1 {
-		vm.pc = vm.rar
+		m.pc = m.rar
 		return
 	}
 
@@ -134,44 +134,44 @@ func (vm *VM) jumpOp(cond uint8, imm uint8, ret uint8) {
 	var ftest bool
 
 	if imm == 0 {
-		reg := vm.ram[vm.pc]
-		addr = vm.regs[reg]
-		vm.pc++
+		reg := m.ram[m.pc]
+		addr = m.regs[reg]
+		m.pc++
 	} else {
-		addr = vm.memRead(vm.pc, 0x4)
-		vm.pc += 4
+		addr = m.memRead(m.pc, 0x4)
+		m.pc += 4
 	}
 
 	switch cond {
 	case C_UNC, C_LINK:
 		ftest = true
 	case C_ZERO:
-		ftest = vm.getFlag(FLG_ZERO)
+		ftest = m.getFlag(FLG_ZERO)
 	case C_NZERO:
-		ftest = !vm.getFlag(FLG_ZERO)
+		ftest = !m.getFlag(FLG_ZERO)
 	case C_POS:
-		ftest = vm.getFlag(FLG_POS)
+		ftest = m.getFlag(FLG_POS)
 	case C_NPOS:
-		ftest = !vm.getFlag(FLG_POS)
+		ftest = !m.getFlag(FLG_POS)
 	case C_SGN:
-		ftest = vm.getFlag(FLG_NEG)
+		ftest = m.getFlag(FLG_NEG)
 	case C_NSGN:
-		ftest = !vm.getFlag(FLG_NEG)
+		ftest = !m.getFlag(FLG_NEG)
 	}
 
 	if cond == C_LINK {
-		vm.rar = vm.pc
+		m.rar = m.pc
 	}
 
 	if ftest {
-		if (addr < vm.csp) || (addr >= vm.dsp) {
+		if (addr < m.csp) || (addr >= m.dsp) {
 			panic("Segmentation fault")
 		}
-		vm.pc = addr
+		m.pc = addr
 	}
 }
 
 //system call
-func (vm *VM) sysCall(num uint32) {
+func (m *VirtualMachine) sysCall(num uint32) {
 
 }
