@@ -23,11 +23,6 @@ type Header struct {
 	CodeSegSize  uint32
 }
 
-const (
-	HEADER_START uint32 = 0
-	HEADER_LEN uint32 = 28
-)
-
 type Program struct {
 	Header
 	CodeSeg []byte
