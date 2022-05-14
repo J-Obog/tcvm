@@ -36,14 +36,14 @@ func (c *Cpu) transferOp(dir uint8, imm uint8, size uint8, ind uint8) {
 		op2 = c.Registers[reg2]
 		c.PC++
 	} else {
-		op2 = stou32(SZ_DWORD, c.Memory[c.PC:c.PC+4])
+		op2 = stou32(SZ_DWORD, c.Memory[c.PC:])
 		c.PC += 4
 	}
 
 	if ind == 0 {
 		c.Registers[reg1] = stou32(SZ_DWORD, u32tos(size, op2))
 	} else {
-		if op2 < c.DSP {
+		if (op2 < c.DSP) || (op2 >= MAX_MEM_SIZE) {
 			panic("Segmentation fault")
 		}
 		if dir == 0 {
@@ -63,7 +63,7 @@ func (c *Cpu) aluOp(fn uint8, imm uint8) {
 	c.PC++
 
 	if imm == 0 {
-		sval = stou32(SZ_DWORD, c.Memory[c.PC:c.PC+4])
+		sval = stou32(SZ_DWORD, c.Memory[c.PC:])
 		c.PC += 4
 	} else {
 		sreg := c.Memory[c.PC]
@@ -116,7 +116,7 @@ func (c *Cpu) jumpOp(cond uint8, imm uint8, ret uint8) {
 		addr = c.Registers[reg]
 		c.PC++
 	} else {
-		addr = stou32(SZ_DWORD, c.Memory[c.PC:c.PC+4])
+		addr = stou32(SZ_DWORD, c.Memory[c.PC:])
 		c.PC += 4
 	}
 

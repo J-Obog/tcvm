@@ -1,5 +1,11 @@
 package vm
 
+import (
+	"os"
+
+	"github.com/J-Obog/tcvm/pkg/com"
+)
+
 //sys call mappings
 const (
 	SYS_EXIT  uint32 = 0
@@ -14,6 +20,8 @@ const (
 //system call 
 func (c *Cpu) sysCall(num uint32) {
 	switch num {
-
+	case SYS_EXIT:
+		exitCode := c.Registers[com.R1]
+		os.Exit(int(exitCode))
 	}
 }
