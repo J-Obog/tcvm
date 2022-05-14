@@ -1,6 +1,10 @@
 package asm
 
-import "bytes"
+import (
+	"bytes"
+
+	"github.com/J-Obog/tcvm/pkg/com"
+)
 
 type Lexer struct {
 	buf *bytes.Buffer
@@ -78,15 +82,15 @@ func (l *Lexer) lexIdent(alphaByte byte) *Token {
 		return &Token{Type: TKN_DATA, Image: img}
 	}
 
-	if _, ok := REGISTER_TBL[img]; ok {
+	if _, ok := com.REGISTER_TBL[img]; ok {
 		return &Token{Type: TKN_REGISTER, Image: img}
 	}
 
-	if _, ok := INSTRUCTION_TBL[img]; ok {
+	if _, ok := com.INSTRUCTION_TBL[img]; ok {
 		return &Token{Type: TKN_INSTRUCTION, Image: img}
 	}
 
-	if _, ok := ALLOCTYPE_TBL[img]; ok {
+	if _, ok := com.ALLOCTYPE_TBL[img]; ok {
 		return &Token{Type: TKN_ALLOCTYPE, Image: img}
 	}
 

@@ -1,5 +1,7 @@
 package asm
 
+import "github.com/J-Obog/tcvm/pkg/com"
+
 type Parser struct {
 	Lex *Lexer
 }
@@ -44,7 +46,7 @@ func (p *Parser) parseData() Statement {
 	if curr.Type != TKN_ALLOCTYPE { //alloctype must follow data directive or data label
 		panic("Invalid specifier used in data definition")
 	} else {
-		data.AllocType = ALLOCTYPE_TBL[curr.Image]
+		data.AllocType = com.ALLOCTYPE_TBL[curr.Image]
 		curr = p.Lex.NextToken()
 		if curr == nil {
 			panic("Unexpected EOF")
@@ -79,7 +81,7 @@ func (p *Parser) isOperandType(oprType uint8) bool {
 }
 
 func (p *Parser) parseInstruction(opTkn *Token) Statement {
-	op := &Instruction{Opcode: INSTRUCTION_TBL[opTkn.Image]}
+	op := &Instruction{Opcode: com.INSTRUCTION_TBL[opTkn.Image]}
 
 	curr := p.Lex.NextToken()
 
