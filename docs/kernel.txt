@@ -88,3 +88,15 @@ r1 = increment
 Result:
 r0 = address of break
 ---------------------------------
+
+SYS_BRK(5)
+---------------------------------
+Description: 
+Sets program break
+
+Args:
+r1 = new break address
+
+Result:
+r0 = address of break
+---------------------------------
