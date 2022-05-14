@@ -22,7 +22,7 @@ func LinkPrograms(progs []*slf.Program) *slf.Program {
 }
 
 func checkFlag(flags uint8, flag uint8) bool {
-	return ((flags >> (flag - 1)) & 0x1) == 1
+	return ((flags >> flag) & 0x1) == 1
 }
 
 func link(prog1 *slf.Program, prog2 *slf.Program) {
@@ -35,27 +35,27 @@ func link(prog1 *slf.Program, prog2 *slf.Program) {
 			prog1.StrTab = append(prog1.StrTab, l)
 			sym.StrTabIndex = uint32(len(prog1.StrTab) - 1)
 
-			if checkFlag(s2.Flags, slf.S_ISDATA) {
+			if checkFlag(s2.Flags, slf.S_DATA) {
 				sym.Offset = s2.Offset + prog1.DataSegSize
 			} else {
 				sym.Offset = s2.Offset + prog1.CodeSegSize
 			}
 			prog1.SymTab[l] = sym
 		} else {
-			s1ExternFlg := checkFlag(s1.Flags, slf.S_ISEXTERN)
-			s2ExternFlg := checkFlag(s2.Flags, slf.S_ISEXTERN)
+			s1ExternFlg := checkFlag(s1.Flags, slf.S_EXTERN)
+			s2ExternFlg := checkFlag(s2.Flags, slf.S_EXTERN)
 			
 			if !s1ExternFlg && !s2ExternFlg {
 				panic("Redefinition of symbol")
 			} 
 			if s1ExternFlg && !s2ExternFlg {
-				if checkFlag(s2.Flags, slf.S_ISDATA) {
+				if checkFlag(s2.Flags, slf.S_DATA) {
 					s1.Offset = s2.Offset + prog1.DataSegSize
 				} else {
 					s1.Offset = s2.Offset + prog1.CodeSegSize
 				}
 
-				s1.Flags |= (0 << slf.S_ISEXTERN)
+				s1.Flags |= (0 << slf.S_EXTERN)
 			}
 		}
 
@@ -81,13 +81,13 @@ func link(prog1 *slf.Program, prog2 *slf.Program) {
 func applyRelocs(prog *slf.Program) {
 	//transform offsets into absolute addresses
 	for l,s := range prog.SymTab {
-		if checkFlag(s.Flags, slf.S_ISEXTERN) {
+		if checkFlag(s.Flags, slf.S_EXTERN) {
 			panic("Unresolved symbol")
 		}
 
 		s.Offset += prog.EntryPoint
 
-		if checkFlag(s.Flags, slf.S_ISDATA) {
+		if checkFlag(s.Flags, slf.S_DATA) {
 			s.Offset += prog.CodeSegSize
 		}
 		

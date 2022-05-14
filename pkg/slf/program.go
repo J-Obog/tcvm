@@ -14,8 +14,8 @@ type Symbol struct {
 }
 
 const ( //symbol flag mapping
-	S_ISEXTERN uint8 = 0x1 
-	S_ISDATA uint8 = 0x2
+	S_EXTERN uint8 = 0 
+	S_DATA uint8 = 1
 )
 
 type Header struct {
