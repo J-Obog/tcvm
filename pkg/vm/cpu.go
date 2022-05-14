@@ -12,7 +12,7 @@ const ( //status flag mapping
 	FLG_POS  uint8 = 2
 )
 
-type VirtualMachine struct {
+type Cpu struct {
 	//register file
 	Registers [REGFILE_SIZE]uint32
 	
@@ -42,72 +42,72 @@ type VirtualMachine struct {
 }
 
 
-func (m *VirtualMachine) memRead(addr uint32, rsize uint8) uint32 {
+func (c *Cpu) memRead(addr uint32, rsize uint8) uint32 {
 	ptr := addr
 	end := ptr + uint32(rsize)
 	data := uint32(0)
 
 	for ptr < end {
 		data <<= 8
-		data |= uint32(m.Memory[ptr])
+		data |= uint32(c.Memory[ptr])
 		ptr++
 	}
 
 	return data
 }
 
-func (m *VirtualMachine) memWrite(addr uint32, wsize uint8, data uint32) {
+func (c *Cpu) memWrite(addr uint32, wsize uint8, data uint32) {
 	ptr := addr
 	end := ptr + uint32(wsize)
 	sfac := wsize - 1
 
 	for ptr < end {
 		word := (data & (255 << (8 * sfac))) >> (8 * sfac)
-		m.Memory[ptr] = uint8(word)
+		c.Memory[ptr] = uint8(word)
 		ptr++
 		sfac--
 	}
 }
 
-func (m *VirtualMachine) regRead(reg uint8, rsize uint8) uint32 {
-	return m.Registers[reg] & ((1 << (8 * rsize)) - 1)
+func (c *Cpu) regRead(reg uint8, rsize uint8) uint32 {
+	return c.Registers[reg] & ((1 << (8 * rsize)) - 1)
 }
 
-func (m *VirtualMachine) regWrite(reg uint8, wsize uint8, data uint32) {
+func (c *Cpu) regWrite(reg uint8, wsize uint8, data uint32) {
 	d := (data & ((1 << (8 * wsize)) - 1))
-	m.Registers[reg] = d
+	c.Registers[reg] = d
 }
 
 
-func (m *VirtualMachine) updateFlags(val uint32) {
+func (c *Cpu) updateFlags(val uint32) {
 	if(val == 0) { // set zero flag
-		m.Flags |= (1 << FLG_ZERO) 
+		c.Flags |= (1 << FLG_ZERO) 
 	} else {
-		m.Flags |= (0 << FLG_ZERO) 
+		c.Flags |= (0 << FLG_ZERO) 
 	}
 
 	sgn := val >> 31
 
 	if sgn == 0 { //set sign flags
-		m.Flags |= (1 << FLG_POS)
-		m.Flags |= (0 << FLG_NEG)
+		c.Flags |= (1 << FLG_POS)
+		c.Flags |= (0 << FLG_NEG)
 	} else {
-		m.Flags |= (0 << FLG_POS)
-		m.Flags |= (1 << FLG_NEG)
+		c.Flags |= (0 << FLG_POS)
+		c.Flags |= (1 << FLG_NEG)
 	}
 }
 
-func (m *VirtualMachine) getFlag(flag uint8) bool {
-	return (((1 << flag) & m.Flags) >> flag) == 1
+func (c *Cpu) getFlag(flag uint8) bool {
+	return (((1 << flag) & c.Flags) >> flag) == 1
 }
 
 
-func (m *VirtualMachine) Run() {
+func (c *Cpu) Run() {
 	for {
 		//fetch
-		op := m.Memory[m.PC]  
+		op := c.Memory[c.PC]  
 		primaryOp := (op >> 5) & 0x7
-		m.PC++
+		c.PC++
 		
 		//decode/execute
 		switch primaryOp {
@@ -119,21 +119,21 @@ func (m *VirtualMachine) Run() {
 			i := (op >> 3) & 0x1
 			s := (op >> 1) & 0x3
 			ind := op & 0x1
-			m.transferOp(d, i, s, ind)
+			c.transferOp(d, i, s, ind)
 
 		case com.ARITHMETIC_LOGIC_OP:
 			f := (op >> 1) & 0xF
 			i := op & 0x1
-			m.aluOp(f, i)
+			c.aluOp(f, i)
 
 		case com.JUMP_OP:
-			c := (op >> 2) & 0x7 
+			cnd := (op >> 2) & 0x7 
 			i := (op >> 1) & 0x1
 			r := op & 0x1 
-			m.jumpOp(c, i, r)
+			c.jumpOp(cnd, i, r)
 
 		case com.SYSCALL_OP:
-			m.sysCall(m.Registers[com.R0])
+			c.sysCall(c.Registers[com.R0])
 		}
 	}
 }

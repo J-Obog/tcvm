@@ -12,7 +12,7 @@ const (
 
 
 //system call 
-func (m *VirtualMachine) sysCall(num uint32) {
+func (c *Cpu) sysCall(num uint32) {
 	switch num {
 
 	}
