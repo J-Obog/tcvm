@@ -1,9 +1,6 @@
 package vm
 
 import (
-	"errors"
-	"os"
-
 	"github.com/J-Obog/tcvm/pkg/com"
 )
 
@@ -17,49 +14,31 @@ const ( //status flag mapping
 
 type VirtualMachine struct {
 	//register file
-	regs [REGFILE_SIZE]uint32
+	Registers [REGFILE_SIZE]uint32
 	
 	//memory big endian
-	ram [MAX_MEM_SIZE]uint8
+	Memory [MAX_MEM_SIZE]uint8
 
 	//program counter
-	pc uint32
+	PC uint32
 
 	//status flags
-	flags uint8 
+	Flags uint8 
 
 	//data segment pointer
-	dsp uint32
+	DSP uint32
 
 	//stack base pointer
-	sbp uint32 
+	SBP uint32 
 
 	//code segment pointer
-	csp uint32
+	CSP uint32
 
 	//extra segment pointer
-	esp uint32
+	ESP uint32
 
 	//return address register
-	rar uint32 
-}
-
-func (m *VirtualMachine) LoadFromFile(path string) (error) {
-	content, err := os.ReadFile(path) 
-
-	if err != nil { 
-		return err
-	}
-
-	if len(content) > MAX_MEM_SIZE {
-		return errors.New("Program size too big")
-	}
-
-	for i, b := range content {
-		m.ram[i] = b
-	}
-
-	return nil
+	RAR uint32 
 }
 
 
@@ -70,7 +49,7 @@ func (m *VirtualMachine) memRead(addr uint32, rsize uint8) uint32 {
 
 	for ptr < end {
 		data <<= 8
-		data |= uint32(m.ram[ptr])
+		data |= uint32(m.Memory[ptr])
 		ptr++
 	}
 
@@ -84,51 +63,51 @@ func (m *VirtualMachine) memWrite(addr uint32, wsize uint8, data uint32) {
 
 	for ptr < end {
 		word := (data & (255 << (8 * sfac))) >> (8 * sfac)
-		m.ram[ptr] = uint8(word)
+		m.Memory[ptr] = uint8(word)
 		ptr++
 		sfac--
 	}
 }
 
 func (m *VirtualMachine) regRead(reg uint8, rsize uint8) uint32 {
-	return m.regs[reg] & ((1 << (8 * rsize)) - 1)
+	return m.Registers[reg] & ((1 << (8 * rsize)) - 1)
 }
 
 func (m *VirtualMachine) regWrite(reg uint8, wsize uint8, data uint32) {
 	d := (data & ((1 << (8 * wsize)) - 1))
-	m.regs[reg] = d
+	m.Registers[reg] = d
 }
 
 
 func (m *VirtualMachine) updateFlags(val uint32) {
 	if(val == 0) { // set zero flag
-		m.flags |= (1 << FLG_ZERO) 
+		m.Flags |= (1 << FLG_ZERO) 
 	} else {
-		m.flags |= (0 << FLG_ZERO) 
+		m.Flags |= (0 << FLG_ZERO) 
 	}
 
 	sgn := val >> 31
 
 	if sgn == 0 { //set sign flags
-		m.flags |= (1 << FLG_POS)
-		m.flags |= (0 << FLG_NEG)
+		m.Flags |= (1 << FLG_POS)
+		m.Flags |= (0 << FLG_NEG)
 	} else {
-		m.flags |= (0 << FLG_POS)
-		m.flags |= (1 << FLG_NEG)
+		m.Flags |= (0 << FLG_POS)
+		m.Flags |= (1 << FLG_NEG)
 	}
 }
 
 func (m *VirtualMachine) getFlag(flag uint8) bool {
-	return (((1 << flag) & m.flags) >> flag) == 1
+	return (((1 << flag) & m.Flags) >> flag) == 1
 }
 
 
 func (m *VirtualMachine) Run() {
 	for {
 		//fetch
-		op := m.ram[m.pc]  
+		op := m.Memory[m.PC]  
 		primaryOp := (op >> 5) & 0x7
-		m.pc++
+		m.PC++
 		
 		//decode/execute
 		switch primaryOp {
@@ -154,7 +133,7 @@ func (m *VirtualMachine) Run() {
 			m.jumpOp(c, i, r)
 
 		case com.SYSCALL_OP:
-			m.sysCall(m.regs[com.R0])
+			m.sysCall(m.Registers[com.R0])
 		}
 	}
 }
