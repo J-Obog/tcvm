@@ -89,15 +89,21 @@ func (l *Linker) link(prog1 *slf.Program, prog2 *slf.Program) {
 			}
 		}
 
-
 		//merge reloc targets
-		for i,t := range prog2.RelTab {
-			lbl := prog2.StrTab[t]
-			newIdx := prog1.SymTab[lbl].StrTabIndex
-			prog2.RelTab[i] = newIdx
+		for _, t := range prog2.RelTab {
+			lbl := prog2.StrTab[t.StrTabIndex]
+			t.StrTabIndex = prog1.SymTab[lbl].StrTabIndex
+			t.Offset += prog1.CodeSegSize
 		} 
-
+		
 		prog1.RelTab = append(prog1.RelTab, prog2.RelTab...)
+
+		
+		//merge segments
+		prog1.CodeSegSize += prog2.CodeSegSize
+		prog1.DataSegSize += prog2.DataSegSize
+		prog1.CodeSeg = append(prog1.CodeSeg, prog2.CodeSeg...)
+		prog1.DataSeg = append(prog1.DataSeg, prog2.DataSeg...)
 	}
 
 }
