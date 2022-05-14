@@ -1,7 +1,5 @@
 package vm
 
-import "github.com/J-Obog/tcvm/pkg/com"
-
 const ( //function mapping for alu operations
 	F_ADD uint8 = 0
 	F_SUB uint8 = 1
@@ -30,42 +28,28 @@ const ( //jump condition mapping
 //data transfer operation
 func (c *Cpu) transferOp(dir uint8, imm uint8, size uint8, ind uint8) {
 	reg1 := c.Memory[c.PC]
-	var reg2 uint8
 	var op2 uint32
-	szMap := [3]uint8{1, 2, 4}
-	sz := szMap[size]
 	c.PC++
 
 	if imm == 0 {
-		reg2 = c.Memory[c.PC]
+		reg2 := c.Memory[c.PC]
 		op2 = c.Registers[reg2]
 		c.PC++
 	} else {
-		op2 = c.memRead(c.PC, 0x4)
+		op2 = stou32(SZ_DWORD, c.Memory[c.PC:c.PC+4])
 		c.PC += 4
 	}
 
 	if ind == 0 {
-		c.regWrite(reg1, sz, op2)
+		c.Registers[reg1] = stou32(SZ_DWORD, u32tos(size, op2))
 	} else {
 		if op2 < c.DSP {
 			panic("Segmentation fault")
 		}
-
 		if dir == 0 {
-			if (imm == 0) && (reg2 == com.SP) {
-				if op2 < c.SBP {
-					panic("Stack underflow")
-				}
-				eAddr := ((op2 + uint32(sz)) - 1)
-				if (eAddr >= MAX_MEM_SIZE) || (eAddr >= c.ESP) {
-					panic("Stack overflow")
-				}
-			}
-
-			c.memWrite(op2, sz, c.Registers[reg1])
+			copy(c.Memory[op2:], u32tos(size, c.Registers[reg1]))
 		} else {
-			c.Registers[reg1] = c.memRead(op2, sz)
+			c.Registers[reg1] = stou32(size, c.Memory[op2:])
 		}
 	}
 }
@@ -79,7 +63,7 @@ func (c *Cpu) aluOp(fn uint8, imm uint8) {
 	c.PC++
 
 	if imm == 0 {
-		sval = c.memRead(c.PC, 0x4)
+		sval = stou32(SZ_DWORD, c.Memory[c.PC:c.PC+4])
 		c.PC += 4
 	} else {
 		sreg := c.Memory[c.PC]
@@ -132,7 +116,7 @@ func (c *Cpu) jumpOp(cond uint8, imm uint8, ret uint8) {
 		addr = c.Registers[reg]
 		c.PC++
 	} else {
-		addr = c.memRead(c.PC, 0x4)
+		addr = stou32(SZ_DWORD, c.Memory[c.PC:c.PC+4])
 		c.PC += 4
 	}
 

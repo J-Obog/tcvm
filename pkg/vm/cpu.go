@@ -88,7 +88,16 @@ func (c *Cpu) Run() {
 
 func stou32(sz uint8, s []byte) uint32 {
 	b := make([]byte, 4)
-	copy(b[4 - len(s):], s)
+	switch sz {
+	case SZ_BYTE:
+		copy(b[3:], s)
+	
+	case SZ_WORD:
+		copy(b[2:], s)
+	
+	case SZ_DWORD:
+		copy(b, s)
+	}
 	return binary.BigEndian.Uint32(b)
 }
 
@@ -121,29 +130,6 @@ func (c *Cpu) memRead(addr uint32, rsize uint8) uint32 {
 
 	return data
 }
-
-func (c *Cpu) memWrite(addr uint32, wsize uint8, data uint32) {
-	ptr := addr
-	end := ptr + uint32(wsize)
-	sfac := wsize - 1
-
-	for ptr < end {
-		word := (data & (255 << (8 * sfac))) >> (8 * sfac)
-		c.Memory[ptr] = uint8(word)
-		ptr++
-		sfac--
-	}
-}
-
-func (c *Cpu) regRead(reg uint8, rsize uint8) uint32 {
-	return c.Registers[reg] & ((1 << (8 * rsize)) - 1)
-}
-
-func (c *Cpu) regWrite(reg uint8, wsize uint8, data uint32) {
-	d := (data & ((1 << (8 * wsize)) - 1))
-	c.Registers[reg] = d
-}
-
 
 func (c *Cpu) updateFlags(val uint32) {
 	if(val == 0) { // set zero flag
