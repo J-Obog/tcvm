@@ -2,8 +2,7 @@ package slf
 
 import "bytes"
 
-func (p *Program) Encode() *bytes.Buffer {
-	buf := bytes.NewBuffer([]byte{})
+func (p *Program) Encode(buf *bytes.Buffer) *bytes.Buffer {
 	p.encodeHeader(buf)
 	p.encodeStrTab(buf)
 	p.encodeSymTab(buf)
@@ -45,7 +44,8 @@ func (p *Program) encodeSymTab(buf *bytes.Buffer) {
 
 func (p *Program) encodeRelTab(buf *bytes.Buffer) {
 	for _, t := range p.RelTab {
-		WriteU32(buf, t)
+		WriteU32(buf, t.Offset)
+		WriteU32(buf, t.StrTabIndex)
 	}
 }
 

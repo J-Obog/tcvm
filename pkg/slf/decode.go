@@ -39,8 +39,9 @@ func (p *Program) decodeSymTab(buf *bytes.Buffer) {
 
 func (p *Program) decodeRelTab(buf *bytes.Buffer) {
 	for i := uint32(0); i < p.RelTabSize; i++ {
-		strIndx := ReadU32(buf)
-		p.RelTab = append(p.RelTab, strIndx)
+		offSet := ReadU32(buf)
+		strIdx := ReadU32(buf)
+		p.RelTab = append(p.RelTab, &Target{Offset: offSet, StrTabIndex: strIdx})
 	}
 }
 
