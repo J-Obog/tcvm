@@ -9,8 +9,8 @@ type Symbol struct {
 }
 
 const ( //symbol flag mapping
-	S_ISEXTERN = 0x1 
-	S_ISDATA = 0x2
+	S_ISEXTERN uint8 = 0x1 
+	S_ISDATA uint8 = 0x2
 )
 
 type Header struct {

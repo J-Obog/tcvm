@@ -49,23 +49,55 @@ func (l *Linker) LinkFiles(out string) {
 	}
 }
 
+func checkFlag(flags uint8, flag uint8) bool {
+	return ((flags >> (flag - 1)) & 0x1) == 1
+}
 
 func (l *Linker) link(prog1 *slf.Program, prog2 *slf.Program) {
 	//link two files
 
-	//merging symbol and string tables 
+	//merging symbol tables 
 	for l, s2 := range prog2.SymTab {
 		s1 := prog1.SymTab[l]
 
 		if s1 == nil {
+			sym := &slf.Symbol{}
 			prog1.StrTab = append(prog1.StrTab, l)
-			s1.StrTabIndex = uint32(len(prog1.StrTab) - 1)
-			
-		} else {
+			sym.StrTabIndex = uint32(len(prog1.StrTab) - 1)
 
+			if checkFlag(s2.Flags, slf.S_ISDATA) {
+				sym.Offset = s2.Offset + prog1.DataSegSize
+			} else {
+				sym.Offset = s2.Offset + prog1.CodeSegSize
+			}
+			prog1.SymTab[l] = sym
+		} else {
+			s1ExternFlg := checkFlag(s1.Flags, slf.S_ISEXTERN)
+			s2ExternFlg := checkFlag(s2.Flags, slf.S_ISEXTERN)
+			
+			if !s1ExternFlg && !s2ExternFlg {
+				panic("Redefinition of symbol")
+			} 
+			if s1ExternFlg && !s2ExternFlg {
+				if checkFlag(s2.Flags, slf.S_ISDATA) {
+					s1.Offset = s2.Offset + prog1.DataSegSize
+				} else {
+					s1.Offset = s2.Offset + prog1.CodeSegSize
+				}
+
+				s1.Flags |= (0 << slf.S_ISEXTERN)
+			}
 		}
 
 
+		//merge reloc targets
+		for i,t := range prog2.RelTab {
+			lbl := prog2.StrTab[t]
+			newIdx := prog1.SymTab[lbl].StrTabIndex
+			prog2.RelTab[i] = newIdx
+		} 
+
+		prog1.RelTab = append(prog1.RelTab, prog2.RelTab...)
 	}
 
 }
