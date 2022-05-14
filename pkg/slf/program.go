@@ -10,17 +10,17 @@ type Target struct {
 type Symbol struct {
 	Offset   uint32
 	StrTabIndex uint32
-	Flags byte //[EXTERN | DATA] 
+	Flags uint8 //[EXTERN | DATA] 
 }
 
 type Header struct {
 	EntryPoint   uint32
 	StartAddress uint32
-	StrTabLen    uint32
-	SymTabLen    uint32
-	RelTabLen    uint32
-	DataSegLen   uint32
-	CodeSegLen   uint32
+	StrTabSize    uint32
+	SymTabSize    uint32
+	RelTabSize    uint32
+	DataSegSize  uint32
+	CodeSegSize  uint32
 }
 
 const (
