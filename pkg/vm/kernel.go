@@ -14,6 +14,7 @@ const (
 	SYS_OPEN  uint32 = 3
 	SYS_CLOSE uint32 = 4
 	SYS_SBRK  uint32 = 5
+	SYS_BRK   uint32 = 6
 )
 
 
@@ -34,6 +35,16 @@ func (c *Cpu) sysCall(num uint32) {
 		} else {
 			c.ESP = newBrk
 			c.Registers[com.R0] = c.ESP
-		}	
+		}
+		
+	case SYS_BRK:
+		addr := c.Registers[com.R1]
+
+		if (addr >= MAX_MEM_SIZE) || (addr <= c.SBP) || (addr <= c.Registers[com.SP]) {
+			c.Registers[com.R0] = 0xFFFFFFFF
+		}  else {
+			c.ESP = addr
+			c.Registers[com.R0] = c.ESP
+		}
 	}
 }
