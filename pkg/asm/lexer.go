@@ -1,9 +1,9 @@
 package asm
 
+import "bytes"
+
 type Lexer struct {
-	input []byte
-	cb    byte //current byte
-	pos   int  //lex position
+	buf *bytes.Buffer
 }
 
 type Token struct {
@@ -21,97 +21,86 @@ const ( //token type mapping
 	TKN_DATA        uint8 = 6
 )
 
-func IsAlpha(b byte) bool {
-	return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z')
-}
-
-func IsWhiteSpace(b byte) bool {
-	return b == ' ' || b == '\n' || b == '\t' || b == '\r'
-}
-
-func IsDigit(b byte) bool {
-	return b >= '0' && b <= '9'
-}
-
-func NewLexer(input []byte) *Lexer {
-	var sb byte
-
-	if len(input) > 0 {
-		sb = input[0]
-	}
-	return &Lexer{input: input, cb: sb}
-}
-
-func (l *Lexer) advance() {
-	l.pos++
-
-	if l.pos >= len(l.input) {
-		l.cb = 0
-	} else {
-		l.cb = l.input[l.pos]
-	}
-}
-
-func (l *Lexer) lexNum() *Token {
-	var buf string
-
-	for IsDigit(l.cb) {
-		buf += string(l.cb)
-		l.advance()
-	}
-
-	return &Token{Type: TKN_NUMBER, Image: buf}
-}
-
-func (l *Lexer) lexIdent() *Token {
-	var buf string
-
-	for IsAlpha(l.cb) || IsDigit(l.cb) || l.cb == '_' {
-		buf += string(l.cb)
-		l.advance()
-	}
-
-	if buf == "label" {
-		return &Token{Type: TKN_LABEL, Image: buf}
-	}
-
-	if buf == "data" {
-		return &Token{Type: TKN_DATA, Image: buf}
-	}
-
-	if _, ok := REGISTER_TBL[buf]; ok {
-		return &Token{Type: TKN_REGISTER, Image: buf}
-	}
-
-	if _, ok := INSTRUCTION_TBL[buf]; ok {
-		return &Token{Type: TKN_INSTRUCTION, Image: buf}
-	}
-
-	if _, ok := ALLOCTYPE_TBL[buf]; ok {
-		return &Token{Type: TKN_ALLOCTYPE, Image: buf}
-	}
-
-	return &Token{Type: TKN_IDENTIFIER, Image: buf}
-}
-
 func (l *Lexer) NextToken() *Token {
-	for IsWhiteSpace(l.cb) {
-		l.advance()
-	}
+	curr, _:= l.buf.ReadByte()
 
-	c := l.cb
-
-	if c == 0 {
+	if curr == 0 {
 		return nil
 	}
 
-	if IsDigit(c) {
-		return l.lexNum()
+	for isWhiteSpace(curr) {
+		curr, _ = l.buf.ReadByte()
 	}
 
-	if IsAlpha(c) || c == '_' {
-		return l.lexIdent()
+	if isDigit(curr) {
+		return l.lexNum(curr)
+	}
+
+	if isAlpha(curr) || curr == '_' {
+		return l.lexIdent(curr)
 	}
 
 	panic("Unrecognized token")
+}
+
+func (l *Lexer) lexNum(numByte byte) *Token {
+	b := []byte{numByte}
+	curr, _ := l.buf.ReadByte()
+
+	for isDigit(curr) {
+		b = append(b, curr)
+		curr, _ = l.buf.ReadByte()
+	}
+
+	img := string(b)  
+	l.buf.UnreadByte()
+
+	return &Token{Type: TKN_NUMBER, Image: img}
+}
+
+func (l *Lexer) lexIdent(alphaByte byte) *Token {
+	b := []byte{alphaByte}
+	curr, _ := l.buf.ReadByte()
+
+	for isAlpha(curr) || isDigit(curr) || curr == '_' {
+		b = append(b, curr)
+		curr, _ = l.buf.ReadByte()
+	}
+
+	img := string(b)  
+	l.buf.UnreadByte()
+
+	if img == "label" {
+		return &Token{Type: TKN_LABEL, Image: img}
+	}
+
+	if img == "data" {
+		return &Token{Type: TKN_DATA, Image: img}
+	}
+
+	if _, ok := REGISTER_TBL[img]; ok {
+		return &Token{Type: TKN_REGISTER, Image: img}
+	}
+
+	if _, ok := INSTRUCTION_TBL[img]; ok {
+		return &Token{Type: TKN_INSTRUCTION, Image: img}
+	}
+
+	if _, ok := ALLOCTYPE_TBL[img]; ok {
+		return &Token{Type: TKN_ALLOCTYPE, Image: img}
+	}
+
+	return &Token{Type: TKN_IDENTIFIER, Image: img}
+}
+
+func isAlpha(b byte) bool {
+	return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z')
+}
+
+func isWhiteSpace(b byte) bool {
+	return b == ' ' || b == '\n' || b == '\t' || b == '\r'
+}
+
+func isDigit(b byte) bool {
+	return b >= '0' && b <= '9'
 }

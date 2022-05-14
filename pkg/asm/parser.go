@@ -4,6 +4,27 @@ type Parser struct {
 	Lex *Lexer
 }
 
+func (p *Parser) NextStatement() Statement {
+	curr := p.Lex.NextToken()
+
+	if curr == nil {
+		return nil
+	}
+
+	switch curr.Type {
+	case TKN_LABEL:
+		return p.parseLabel()
+
+	case TKN_DATA:
+		return p.parseData()
+
+	case TKN_INSTRUCTION:
+		return p.parseInstruction(curr)
+	}
+
+	panic("Invalid statement")
+}
+
 func (p *Parser) parseData() Statement {
 	data := &Data{}
 	curr := p.Lex.NextToken()
@@ -69,25 +90,4 @@ func (p *Parser) parseInstruction(opTkn *Token) Statement {
 	}
 
 	return op
-}
-
-func (p *Parser) NextStatement() Statement {
-	curr := p.Lex.NextToken()
-
-	if curr == nil {
-		return nil
-	}
-
-	switch curr.Type {
-	case TKN_LABEL:
-		return p.parseLabel()
-
-	case TKN_DATA:
-		return p.parseData()
-
-	case TKN_INSTRUCTION:
-		return p.parseInstruction(curr)
-	}
-
-	panic("Invalid statement")
 }
