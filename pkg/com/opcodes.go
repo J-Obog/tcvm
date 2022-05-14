@@ -1,5 +1,14 @@
 package com
 
+//primary opcodes
+const (
+	DATA_TRANSFER_OP  uint8 = 0
+	ARITHMETIC_LOGIC_OP uint8 = 1
+	JUMP_OP uint8 = 2
+	NO_OPERATION_OP uint8 = 3
+	SYSCALL_OP uint8 = 4
+)
+
 //opcodes
 const ( 
 	MOV   uint8 = 0x4
@@ -188,3 +197,4 @@ var INSTRUCTION_TBL = map[string]uint8{
 	"nop":   NOP,
 	"sys":   SYS,
 }
+

@@ -1,12 +1,6 @@
 package vmachine
 
-const (
-	OP_DT  uint8 = 0
-	OP_ALU uint8 = 1
-	OP_JMP uint8 = 2
-	OP_NOP uint8 = 3
-	OP_SYS uint8 = 4
-)
+import "github.com/J-Obog/tcvm/pkg/com"
 
 const ( //function mapping for alu operations
 	F_ADD uint8 = 0
@@ -22,29 +16,10 @@ const ( //function mapping for alu operations
 	F_SHR uint8 = 10
 )
 
-const ( //status flag mapping
-	FLG_HALT uint8 = 0
-	FLG_ZERO uint8 = 1
-	FLG_NEG  uint8 = 2
-	FLG_POS  uint8 = 3
-)
-
 const ( //system call mapping
 	S_HALT uint32 = 0
 	S_PUTS uint32 = 1
 	S_GETS uint32 = 2
-)
-
-const ( //register mapping
-	R0 uint8 = 0
-	R1 uint8 = 1
-	R2 uint8 = 2
-	R3 uint8 = 3
-	R4 uint8 = 4
-	R5 uint8 = 5
-	R6 uint8 = 6
-	R7 uint8 = 7
-	SP uint8 = 8
 )
 
 const ( //jump condition mapping
@@ -84,7 +59,7 @@ func (vm *VM) transferOp(dir uint8, imm uint8, size uint8, ind uint8) {
 		}
 
 		if dir == 0 {
-			if (imm == 0) && (reg2 == SP) {
+			if (imm == 0) && (reg2 == com.SP) {
 				if op2 < vm.sbp {
 					panic("Stack underflow")
 				}

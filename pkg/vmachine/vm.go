@@ -3,10 +3,18 @@ package vmachine
 import (
 	"errors"
 	"os"
+
+	"github.com/J-Obog/tcvm/pkg/com"
 )
 
 const MAX_MEM_SIZE = (1 << 16)
 const REGFILE_SIZE = (1 << 4)
+const ( //status flag mapping
+	FLG_HALT uint8 = 0
+	FLG_ZERO uint8 = 1
+	FLG_NEG  uint8 = 2
+	FLG_POS  uint8 = 3
+)
 
 type VM struct {
 	//register file
@@ -129,29 +137,29 @@ func (vm *VM) Run() {
 		
 		//decode/execute
 		switch primaryOp {
-		case OP_NOP:
+		case com.NO_OPERATION_OP:
 			//no operation
 
-		case OP_DT:
+		case com.DATA_TRANSFER_OP:
 			d := (op >> 4) & 0x1
 			i := (op >> 3) & 0x1
 			s := (op >> 1) & 0x3
 			ind := op & 0x1
 			vm.transferOp(d, i, s, ind)
 
-		case OP_ALU:
+		case com.ARITHMETIC_LOGIC_OP:
 			f := (op >> 1) & 0xF
 			i := op & 0x1
 			vm.aluOp(f, i)
 
-		case OP_JMP:
+		case com.JUMP_OP:
 			c := (op >> 2) & 0x7 
 			i := (op >> 1) & 0x1
 			r := op & 0x1 
 			vm.jumpOp(c, i, r)
 
-		case OP_SYS:
-			vm.sysCall(vm.regs[R2])
+		case com.SYSCALL_OP:
+			vm.sysCall(vm.regs[com.R0])
 		}
 	}
 }
