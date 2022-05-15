@@ -17,7 +17,6 @@ const (
 	SYS_BRK   uint32 = 6
 )
 
-
 //system call 
 func (c *Cpu) sysCall(num uint32) {
 	switch num {

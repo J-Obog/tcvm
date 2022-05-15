@@ -3,18 +3,37 @@ package asm
 import "github.com/J-Obog/tcvm/pkg/slf"
 
 type Assembler struct {
-	slf.Program
-	code []Statement
+	pgm *slf.Program
+	par *Parser
 }
 
-func NewAssembler(p *Parser) *Assembler {
-	a := &Assembler{}
-	stmt := p.NextStatement()
+func (a *Assembler) AssembleProgram() *slf.Program {
+	stmt := a.par.NextStatement()
 
 	for stmt != nil {
-		a.code = append(a.code, stmt)
-		stmt = p.NextStatement()
+		switch stmt.(type) {
+		case *Label:
+			a.handleLabel(stmt)
+		case *Data:
+			a.handleData(stmt) 
+		case *Instruction:
+			a.handleInstruction(stmt)
+		}
+
+		stmt = a.par.NextStatement()
 	}
 
-	return a
+	return a.pgm
+}
+
+func (a *Assembler) handleData(data Statement) {
+	//hadle any data we come across
+}
+
+func (a *Assembler) handleInstruction(op Statement) {
+	//handle any instruction we come across
+}
+
+func (a *Assembler) handleLabel(label Statement) {
+	//handle any label we come accross
 }
